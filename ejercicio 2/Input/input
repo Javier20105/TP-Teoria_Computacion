@@ -1,4 +1,4 @@
 abcdefg
 SABCDEFG
 S
-S->A,S->B,S->Aa
+S->Aa,A->ε,B->ε,C->ABw

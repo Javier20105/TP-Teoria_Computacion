@@ -9,7 +9,8 @@ object App {
     if (s.size == 0) {
       Set()
     } else {
-      crearProducciones(s.take(s.size - 1)) + new Produccion(s(s.size - 1).split("->")(0).charAt(0), s(s.size - 1).split("->")(1))
+      val partesProd = s(s.size - 1).split("->")
+      crearProducciones(s.take(s.size - 1)) + new Produccion(partesProd(0).charAt(0), partesProd(1))
     }
   }
 
@@ -23,8 +24,39 @@ object App {
     new Gramatica(terminales, variables, inicial, producciones)
   }
 
+  def descubrirNulleables(producciones: Set[Produccion]): Set[Char] = {
+
+    def esNulleable(p: Produccion, n: Set[Char]): Boolean = {
+      p.cadena.map(n.contains(_)).fold(true)(_ && _)
+
+    }
+
+    def casoBase(producciones: Set[Produccion]): Set[Char] = {
+      producciones.filter(_.esEpsilon).map(_.variable)
+    }
+
+    def casoInductivo(anterior:Set[Char], producciones:Set[Produccion]):Set[Char] = {
+      anterior ++ producciones.filter(esNulleable(_,anterior)).map(_.variable)
+    }
+
+    def recursiva(anterior: Set[Char], actual: Set[Char], producciones: Set[Produccion]): Set[Char] = {
+      if (anterior == actual) {
+        return actual
+      } else {
+        val siguiente = casoInductivo(actual,producciones)
+        recursiva(actual, siguiente, producciones)
+      }
+    }
+    
+    val paso0 = casoBase(producciones)
+    val paso1 =casoInductivo(paso0,producciones)    
+    recursiva(paso0, paso1, producciones)
+  }
+
   def main(args: Array[String]): Unit = {
 
-    print(importarGramatica("Input/input"))
+    val g = importarGramatica("Input/input")
+    println(g)
+    println("Nulleables: " + descubrirNulleables(g.producciones))
   }
 }
