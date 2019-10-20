@@ -60,7 +60,7 @@ object App {
     def encontrarPrimero(s: String, c: Char): Int = {
       s.indexOf(c)
     }
-    def quitar(s: String, index:Int): String = {
+    def quitar(s: String, index: Int): String = {
       s.slice(0, index) + s.slice(index + 1, s.size)
     }
 
@@ -68,26 +68,25 @@ object App {
       p.cadena.toList.filter(c.contains(_))
     }
 
-    def recursiva(p: Produccion, nulleables: List[Char],index:Int): Set[Produccion] = {
+    def recursiva(p: Produccion, nulleables: List[Char], index: Int): Set[Produccion] = {
       if (nulleables.size == 0) {
         Set(p)
       } else {
         val n = nulleables.tail
-        val i = index + encontrarPrimero(p.cadena.slice(index,p.cadena.size), nulleables.head)
-        recursiva(p, n,i) ++ recursiva(new Produccion(p.variable, quitar(p.cadena, i)), n,i)
+        val i = index + encontrarPrimero(p.cadena.slice(index, p.cadena.size), nulleables.head)
+        recursiva(p, n, i) ++ recursiva(new Produccion(p.variable, quitar(p.cadena, i)), n, i)
 
       }
 
     }
 
     def produccionSinEpsilon(p: Produccion, nulleables: List[Char]): Set[Produccion] = {
-      recursiva(p, nulleablesEnProduccion(p, nulleables),0)
+      recursiva(p, nulleablesEnProduccion(p, nulleables), 0)
     }
 
-    val resul = g.producciones.toList.map(produccionSinEpsilon(_, nulleables.toList))
-    print("Resul: " + resul)
+    val resul = g.producciones.map(produccionSinEpsilon(_, nulleables.toList))
 
-    null
+    new Gramatica(g.terminales, g.variables, g.inicial, resul.flatten)
   }
 
   def main(args: Array[String]): Unit = {
@@ -95,8 +94,10 @@ object App {
     val g = importarGramatica("Input/input")
     val nulleables = descubrirNulleables(g.producciones)
     println(g)
+    println()
     println("Nulleables: " + nulleables)
-    val sinEpsilon = eliminarProduccionesEpsilon(g, nulleables)
+    println()
+    println(eliminarProduccionesEpsilon(g, nulleables))
 
   }
 }
