@@ -55,8 +55,6 @@ object App {
 
   def eliminarProduccionesEpsilon(g: Gramatica, nulleables: Set[Char]): Gramatica = {
 
-    //"-------------------------------------------------------------------"
-
     def encontrarPrimero(s: String, c: Char): Int = {
       s.indexOf(c)
     }
@@ -85,19 +83,54 @@ object App {
     }
 
     val resul = g.producciones.map(produccionSinEpsilon(_, nulleables.toList))
-
-    new Gramatica(g.terminales, g.variables, g.inicial, resul.flatten)
+    println("resultado: " + resul)
+    new Gramatica(g.terminales, g.variables, g.inicial, resul.flatten.filter(_.cadena != "ε").filter(_.cadena != ""))
   }
 
+  def crearParesUnitarios(g: Gramatica): Set[(Char, Char)] = {
+
+    def casoBase(v: Set[Char]): Set[(Char, Char)] = {
+      v.map((c: Char) => (c, c))
+    }
+
+    def casoInductivo(pares: Set[(Char, Char)], unitarias: Set[Produccion]): Set[(Char, Char)] = {
+      if (unitarias.size == 0) {
+        return Set()
+      } else {
+        val p = unitarias.head
+        val r = pares.filter(_._2 == p.variable)
+        pares ++ r.map((c: (Char, Char)) => (c._1, p.cadena.charAt(0))) ++ casoInductivo(pares, unitarias.tail)
+      }
+    }
+
+    def recursiva(anterior: Set[(Char, Char)], actual: Set[(Char, Char)], unitarias: Set[Produccion]): Set[(Char, Char)] = {
+      if (anterior == actual) {
+        actual
+      } else {
+        val siguiente = casoInductivo(actual, unitarias)
+        recursiva(actual,siguiente,unitarias)
+      }
+    }
+    val unitarias = g.producciones.filter(_.esUnitaria())
+    val paso0 = casoBase(g.variables)
+    val paso1 = casoInductivo(paso0, unitarias)
+    recursiva(paso0, paso1, unitarias)
+  }
   def main(args: Array[String]): Unit = {
 
     val g = importarGramatica("Input/input")
     val nulleables = descubrirNulleables(g.producciones)
+    val sinEpsilon = eliminarProduccionesEpsilon(g, nulleables)
+    val paresUnitarios = crearParesUnitarios(g)
+
+    /*println("Gramatica: ")
     println(g)
     println()
     println("Nulleables: " + nulleables)
     println()
-    println(eliminarProduccionesEpsilon(g, nulleables))
+    println("Sin epsilon: " + sinEpsilon)*/
+    println()
+    println("pares unitarios:" + paresUnitarios)
 
   }
 }

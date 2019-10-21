@@ -7,4 +7,8 @@ case class Produccion(v: Char, c: String) {
 
   def esEpsilon(): Boolean = { cadena == "ε" }
 
+  def esUnitaria(): Boolean = { 
+    cadena.size == 1 && cadena.charAt(0) >= 65 && cadena.charAt(0) <= 90 
+    }
+
 }
