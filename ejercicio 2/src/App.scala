@@ -108,28 +108,34 @@ object App {
         actual
       } else {
         val siguiente = casoInductivo(actual, unitarias)
-        recursiva(actual,siguiente,unitarias)
+        recursiva(actual, siguiente, unitarias)
       }
     }
+
     val unitarias = g.producciones.filter(_.esUnitaria())
+    println("Produccion: " + g.producciones + " unitarias: " + unitarias)
+
     val paso0 = casoBase(g.variables)
     val paso1 = casoInductivo(paso0, unitarias)
     recursiva(paso0, paso1, unitarias)
   }
   def main(args: Array[String]): Unit = {
 
-    val g = importarGramatica("Input/input")
-    val nulleables = descubrirNulleables(g.producciones)
-    val sinEpsilon = eliminarProduccionesEpsilon(g, nulleables)
-    val paresUnitarios = crearParesUnitarios(g)
+    val gra = importarGramatica("Input/input")
+    val nulleables = descubrirNulleables(gra.producciones)
+    val sinEpsilon = eliminarProduccionesEpsilon(gra, nulleables)
+    val paresUnitarios = crearParesUnitarios(sinEpsilon)
 
-    /*println("Gramatica: ")
-    println(g)
+    println("Gramatica: ")
+    println(gra)
     println()
     println("Nulleables: " + nulleables)
     println()
-    println("Sin epsilon: " + sinEpsilon)*/
+    println("Sin epsilon: ")
+    println(sinEpsilon)
     println()
+    
+    //sinEpsilon.producciones foreach{(p:Produccion) => println(p +" tamaño cadena: " +  p.cadena.size)}
     println("pares unitarios:" + paresUnitarios)
 
   }
