@@ -158,14 +158,23 @@ object App {
     recursiva(paso0, paso1, g.producciones)
 
   }
+  
+  def eliminarNoGeneradores(g:Gramatica, generadores:Set[Char]):Gramatica = {
+    //val pro = g.producciones.filter((p:Produccion)=> generadores.intersect(Set() + p.variable) == Set() && generadores.intersect(Set() ++ p.cadena) == Set())
+    val p = g.producciones.filter((p:Produccion)=> ((Set() + p.variable) ++ p.cadena) -- generadores == Set())
+    new Gramatica(g.terminales,g.variables,g.inicial,p)
+  }
+  
   def main(args: Array[String]): Unit = {
 
     val gra = importarGramatica("Input/input")
     val nulleables = descubrirNulleables(gra.producciones)
     val sinEpsilon = eliminarProduccionesEpsilon(gra, nulleables)
     val paresUnitarios = crearParesUnitarios(sinEpsilon)
+    val sinUnitarias = eliminarProduccionesUnitarias(gra, paresUnitarios)
+    val simbolosGeneradores = descubrirGeneradores(gra)
 
-    println("Gramatica: ")
+    /*println("Gramatica: ")
     println(gra)
     println()
     println("Nulleables: " + nulleables)
@@ -178,8 +187,9 @@ object App {
     println("Sin Producciones unitarias:")
     println()
     println(eliminarProduccionesUnitarias(gra, paresUnitarios))
-    println()
+    println()*/
     println("Simbolos generadores; " + descubrirGeneradores(gra))
     println()
+    println("Sin no generadores: " + eliminarNoGeneradores(gra,simbolosGeneradores))
   }
 }
