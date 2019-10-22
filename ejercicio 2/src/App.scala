@@ -117,25 +117,47 @@ object App {
 
     val paso0 = casoBase(g.variables)
     val paso1 = casoInductivo(paso0, unitarias)
+
     recursiva(paso0, paso1, unitarias)
   }
-  
-  def eliminarProduccionesUnitarias(g:Gramatica, paresUnitarios:Set[(Char,Char)]):Gramatica = {
-    def recursiva(paresUnitarios:Set[(Char,Char)], peoduccionesNoUnitarias:Set[Produccion]): Set[Produccion] = {
-      if(paresUnitarios.size == 0){
+
+  def eliminarProduccionesUnitarias(g: Gramatica, paresUnitarios: Set[(Char, Char)]): Gramatica = {
+    def recursiva(paresUnitarios: Set[(Char, Char)], peoduccionesNoUnitarias: Set[Produccion]): Set[Produccion] = {
+      if (paresUnitarios.size == 0) {
         peoduccionesNoUnitarias
-      }
-      else{
+      } else {
         val actual = paresUnitarios.head
-        val prodParaAgregar =  peoduccionesNoUnitarias.filter(_.variable == actual._2).map((pro:Produccion) => new Produccion(actual._1,pro.cadena))
+        val prodParaAgregar = peoduccionesNoUnitarias.filter(_.variable == actual._2).map((pro: Produccion) => new Produccion(actual._1, pro.cadena))
         prodParaAgregar ++ recursiva(paresUnitarios.tail, peoduccionesNoUnitarias)
       }
     }
     val noUnitarias = g.producciones.filter(!_.esUnitaria())
-    new Gramatica(g.terminales,g.variables,g.inicial, recursiva(paresUnitarios,noUnitarias))
+    new Gramatica(g.terminales, g.variables, g.inicial, recursiva(paresUnitarios, noUnitarias))
   }
 
-  
+  def descubrirGeneradores(g: Gramatica): Set[Char] = {
+
+    def casoBase(terminales: Set[Char]): Set[Char] = {
+      terminales
+    }
+
+    def casoInductivo(generadores: Set[Char], producciones: Set[Produccion]): Set[Char] = {
+      generadores ++ producciones.filter((p: Produccion) => (Set() ++ p.cadena).subsetOf(generadores)).map((_.variable))
+    }
+
+    def recursiva(anterior: Set[Char], actual: Set[Char], producciones: Set[Produccion]): Set[Char] = {
+      if (anterior == actual) {
+        return actual
+      } else {
+        val siguiente = casoInductivo(actual, producciones)
+        recursiva(actual, siguiente, producciones)
+      }
+    }
+    val paso0 = casoBase(g.terminales)
+    val paso1 = casoInductivo(paso0, g.producciones)
+    recursiva(paso0, paso1, g.producciones)
+
+  }
   def main(args: Array[String]): Unit = {
 
     val gra = importarGramatica("Input/input")
@@ -143,19 +165,21 @@ object App {
     val sinEpsilon = eliminarProduccionesEpsilon(gra, nulleables)
     val paresUnitarios = crearParesUnitarios(sinEpsilon)
 
-    /*println("Gramatica: ")
+    println("Gramatica: ")
     println(gra)
     println()
     println("Nulleables: " + nulleables)
     println()
     println("Sin epsilon: ")
     println(sinEpsilon)
-    println()*/
+    println()
     println("pares unitarios:" + paresUnitarios)
     println()
     println("Sin Producciones unitarias:")
     println()
     println(eliminarProduccionesUnitarias(gra, paresUnitarios))
+    println()
+    println("Simbolos generadores; " + descubrirGeneradores(gra))
     println()
   }
 }
