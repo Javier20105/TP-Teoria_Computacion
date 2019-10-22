@@ -1,4 +1,4 @@
 abc
 SABC
 S
-S->ABa,A->ε,A->B,B->b,B->ε
+S->ABa,A->ε,A->B,B->b,B->ε,C->AB

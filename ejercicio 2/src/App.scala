@@ -83,7 +83,7 @@ object App {
     }
 
     val resul = g.producciones.map(produccionSinEpsilon(_, nulleables.toList))
-    println("resultado: " + resul)
+    //println("resultado: " + resul)
     new Gramatica(g.terminales, g.variables, g.inicial, resul.flatten.filter(_.cadena != "ε").filter(_.cadena != ""))
   }
 
@@ -113,12 +113,29 @@ object App {
     }
 
     val unitarias = g.producciones.filter(_.esUnitaria())
-    println("Produccion: " + g.producciones + " unitarias: " + unitarias)
+    //println("Produccion: " + g.producciones + " unitarias: " + unitarias)
 
     val paso0 = casoBase(g.variables)
     val paso1 = casoInductivo(paso0, unitarias)
     recursiva(paso0, paso1, unitarias)
   }
+  
+  def eliminarProduccionesUnitarias(g:Gramatica, paresUnitarios:Set[(Char,Char)]):Gramatica = {
+    def recursiva(paresUnitarios:Set[(Char,Char)], peoduccionesNoUnitarias:Set[Produccion]): Set[Produccion] = {
+      if(paresUnitarios.size == 0){
+        peoduccionesNoUnitarias
+      }
+      else{
+        val actual = paresUnitarios.head
+        val prodParaAgregar =  peoduccionesNoUnitarias.filter(_.variable == actual._2).map((pro:Produccion) => new Produccion(actual._1,pro.cadena))
+        prodParaAgregar ++ recursiva(paresUnitarios.tail, peoduccionesNoUnitarias)
+      }
+    }
+    val noUnitarias = g.producciones.filter(!_.esUnitaria())
+    new Gramatica(g.terminales,g.variables,g.inicial, recursiva(paresUnitarios,noUnitarias))
+  }
+
+  
   def main(args: Array[String]): Unit = {
 
     val gra = importarGramatica("Input/input")
@@ -126,17 +143,19 @@ object App {
     val sinEpsilon = eliminarProduccionesEpsilon(gra, nulleables)
     val paresUnitarios = crearParesUnitarios(sinEpsilon)
 
-    println("Gramatica: ")
+    /*println("Gramatica: ")
     println(gra)
     println()
     println("Nulleables: " + nulleables)
     println()
     println("Sin epsilon: ")
     println(sinEpsilon)
-    println()
-    
-    //sinEpsilon.producciones foreach{(p:Produccion) => println(p +" tamaño cadena: " +  p.cadena.size)}
+    println()*/
     println("pares unitarios:" + paresUnitarios)
-
+    println()
+    println("Sin Producciones unitarias:")
+    println()
+    println(eliminarProduccionesUnitarias(gra, paresUnitarios))
+    println()
   }
 }
