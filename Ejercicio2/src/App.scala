@@ -158,23 +158,51 @@ object App {
     recursiva(paso0, paso1, g.producciones)
 
   }
-  
-  def eliminarNoGeneradores(g:Gramatica, generadores:Set[Char]):Gramatica = {
+
+  def eliminarNoGeneradores(g: Gramatica, generadores: Set[Char]): Gramatica = {
     //val pro = g.producciones.filter((p:Produccion)=> generadores.intersect(Set() + p.variable) == Set() && generadores.intersect(Set() ++ p.cadena) == Set())
-    val p = g.producciones.filter((p:Produccion)=> ((Set() + p.variable) ++ p.cadena) -- generadores == Set())
-    new Gramatica(g.terminales,g.variables,g.inicial,p)
+    val p = g.producciones.filter((p: Produccion) => ((Set() + p.variable) ++ p.cadena) -- generadores == Set())
+    new Gramatica(g.terminales, g.variables, g.inicial, p)
   }
-  
+
+  def descubrirAlcanzables(g: Gramatica): Set[Char] = {
+
+    def casoBase(inicial: Char): Set[Char] = {
+      Set() + inicial
+    }
+
+    def casoInductivo(alcanzables: Set[Char], producciones: Set[Produccion]): Set[Char] = {
+      alcanzables ++ producciones.filter((p: Produccion) => alcanzables.contains(p.variable)).map(_.cadena.toList).flatten
+    }
+
+    def recursiva(anterior: Set[Char], actual: Set[Char], producciones: Set[Produccion]): Set[Char] = {
+      if (anterior == actual) {
+        return actual
+      } else {
+        val siguiente = casoInductivo(actual, producciones)
+        return recursiva(actual, siguiente, producciones)
+      }
+    }
+
+    val paso0 = casoBase(g.inicial)
+    val paso1 = casoInductivo(paso0, g.producciones)
+    println("Paso 0: " + paso0)
+    println("Paso 1: " + paso1)
+    recursiva(paso0, paso1, g.producciones)
+
+  }
   def main(args: Array[String]): Unit = {
 
     val gra = importarGramatica("Input/input")
     val nulleables = descubrirNulleables(gra.producciones)
     val sinEpsilon = eliminarProduccionesEpsilon(gra, nulleables)
     val paresUnitarios = crearParesUnitarios(sinEpsilon)
-    val sinUnitarias = eliminarProduccionesUnitarias(gra, paresUnitarios)
-    val simbolosGeneradores = descubrirGeneradores(gra)
+    val sinUnitarias = eliminarProduccionesUnitarias(sinEpsilon, paresUnitarios)
+    val simbolosGeneradores = descubrirGeneradores(sinUnitarias)
+    val sinNoGeneradores = eliminarNoGeneradores(sinUnitarias, simbolosGeneradores)
+    val simbolosAlcazables = descubrirAlcanzables(gra)
 
-    /*println("Gramatica: ")
+    println("Gramatica: ")
     println(gra)
     println()
     println("Nulleables: " + nulleables)
@@ -186,10 +214,20 @@ object App {
     println()
     println("Sin Producciones unitarias:")
     println()
-    println(eliminarProduccionesUnitarias(gra, paresUnitarios))
-    println()*/
-    println("Simbolos generadores; " + descubrirGeneradores(gra))
+    println(sinUnitarias)
     println()
-    println("Sin no generadores: " + eliminarNoGeneradores(gra,simbolosGeneradores))
+    println("Simbolos generadores:")
+    println()
+    println(simbolosGeneradores)
+    println()
+    println("Sin no generadores:")
+    println()
+    println(sinNoGeneradores)
+    println()
+    println("Simbolos Alcanzables")
+    println()
+    println(simbolosAlcazables)
+    println()
+
   }
 }
