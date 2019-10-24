@@ -193,9 +193,9 @@ object App {
     new Gramatica(g.terminales, g.variables, g.inicial, p)
   }
 
-  def main(args: Array[String]): Unit = {
+  def limpiar(ruta:String): Gramatica = {
 
-    val gra = importarGramatica("Input/input")
+    val gra = importarGramatica(ruta)
     val nulleables = descubrirNulleables(gra.producciones)
     val sinEpsilon = eliminarProduccionesEpsilon(gra, nulleables)
     val paresUnitarios = crearParesUnitarios(sinEpsilon)
@@ -205,7 +205,7 @@ object App {
     val simbolosAlcazables = descubrirAlcanzables(sinUnitarias)
     val limpia = eliminarNoAlcanzables(sinNoGeneradores, simbolosAlcazables)
 
-    println("Gramatica: ")
+    /*println("Gramatica: ")
     println(gra)
     println()
     println("Nulleables: " + nulleables)
@@ -233,7 +233,8 @@ object App {
     println()
     println("Sin no alcanzables")
     println()
-    println(limpia)
+    println(limpia)*/
+    limpia
 
   }
 }
