@@ -83,7 +83,6 @@ object App {
     }
 
     val resul = g.producciones.map(produccionSinEpsilon(_, nulleables.toList))
-    //println("resultado: " + resul)
     new Gramatica(g.terminales, g.variables, g.inicial, resul.flatten.filter(_.cadena != "ε").filter(_.cadena != ""))
   }
 
@@ -113,7 +112,6 @@ object App {
     }
 
     val unitarias = g.producciones.filter(_.esUnitaria())
-    //println("Produccion: " + g.producciones + " unitarias: " + unitarias)
 
     val paso0 = casoBase(g.variables)
     val paso1 = casoInductivo(paso0, unitarias)
@@ -160,7 +158,6 @@ object App {
   }
 
   def eliminarNoGeneradores(g: Gramatica, generadores: Set[Char]): Gramatica = {
-    //val pro = g.producciones.filter((p:Produccion)=> generadores.intersect(Set() + p.variable) == Set() && generadores.intersect(Set() ++ p.cadena) == Set())
     val p = g.producciones.filter((p: Produccion) => ((Set() + p.variable) ++ p.cadena) -- generadores == Set())
     new Gramatica(g.terminales, g.variables, g.inicial, p)
   }
@@ -186,11 +183,16 @@ object App {
 
     val paso0 = casoBase(g.inicial)
     val paso1 = casoInductivo(paso0, g.producciones)
-    println("Paso 0: " + paso0)
-    println("Paso 1: " + paso1)
+
     recursiva(paso0, paso1, g.producciones)
 
   }
+
+  def eliminarNoAlcanzables(g: Gramatica, alcanzables: Set[Char]): Gramatica = {
+    val p = g.producciones.filter((p: Produccion) => ((Set() + p.variable) ++ p.cadena) -- alcanzables == Set())
+    new Gramatica(g.terminales, g.variables, g.inicial, p)
+  }
+
   def main(args: Array[String]): Unit = {
 
     val gra = importarGramatica("Input/input")
@@ -200,7 +202,8 @@ object App {
     val sinUnitarias = eliminarProduccionesUnitarias(sinEpsilon, paresUnitarios)
     val simbolosGeneradores = descubrirGeneradores(sinUnitarias)
     val sinNoGeneradores = eliminarNoGeneradores(sinUnitarias, simbolosGeneradores)
-    val simbolosAlcazables = descubrirAlcanzables(gra)
+    val simbolosAlcazables = descubrirAlcanzables(sinUnitarias)
+    val limpia = eliminarNoAlcanzables(sinNoGeneradores, simbolosAlcazables)
 
     println("Gramatica: ")
     println(gra)
@@ -228,6 +231,9 @@ object App {
     println()
     println(simbolosAlcazables)
     println()
+    println("Sin no alcanzables")
+    println()
+    println(limpia)
 
   }
 }
