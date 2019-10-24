@@ -19,3 +19,5 @@ class ExampleSpec extends UnitSpec {
     }
   }
 }
+
+//para correr el test en eclipse Run As -> Scala Test Suite
