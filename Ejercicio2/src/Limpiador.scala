@@ -1,28 +1,10 @@
 import Modelo.Gramatica
 import Modelo.Produccion
-import scala.io.Source
-import java.io._
+
 
 object App {
 
-  def importarGramatica(ruta: String): Gramatica = {
-
-    def crearProducciones(s: Array[String]): Set[Produccion] = {
-      if (s.size == 0) {
-        Set()
-      } else {
-        val partesProd = s(s.size - 1).split("->")
-        crearProducciones(s.take(s.size - 1)) + new Produccion(partesProd(0).charAt(0), partesProd(1))
-      }
-    }
-    val lineas = Source.fromFile(ruta).getLines()
-    val terminales = Set() ++ lineas.next.toList
-    val variables = Set() ++ lineas.next.toList
-    val inicial = lineas.next.charAt(0)
-    val producciones = crearProducciones(lineas.next().split(","))
-
-    new Gramatica(terminales, variables, inicial, producciones)
-  }
+  
 
   def descubrirNulleables(producciones: Set[Produccion]): Set[Char] = {
 
@@ -193,9 +175,8 @@ object App {
     new Gramatica(g.terminales, g.variables, g.inicial, p)
   }
 
-  def limpiar(ruta:String): Gramatica = {
+  def limpiar(gra:Gramatica): Gramatica = {
 
-    val gra = importarGramatica(ruta)
     val nulleables = descubrirNulleables(gra.producciones)
     val sinEpsilon = eliminarProduccionesEpsilon(gra, nulleables)
     val paresUnitarios = crearParesUnitarios(sinEpsilon)
@@ -205,7 +186,7 @@ object App {
     val simbolosAlcazables = descubrirAlcanzables(sinUnitarias)
     val limpia = eliminarNoAlcanzables(sinNoGeneradores, simbolosAlcazables)
 
-    /*println("Gramatica: ")
+    println("Gramatica: ")
     println(gra)
     println()
     println("Nulleables: " + nulleables)
@@ -233,8 +214,14 @@ object App {
     println()
     println("Sin no alcanzables")
     println()
-    println(limpia)*/
+    println(limpia)
     limpia
 
   }
+  
+  def main(args:Array[String]):Unit ={
+      val gra = Importador.importarGramatica("Input/input")
+      limpiar(gra)
+
+  } 
 }
