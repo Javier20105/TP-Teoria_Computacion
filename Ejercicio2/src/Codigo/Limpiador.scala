@@ -2,9 +2,8 @@ package Codigo
 
 import Modelo.Gramatica
 import Modelo.Produccion
-import Codigo.Importador
 
-object App {
+object Limpiador {
 
   def descubrirNulleables(producciones: Set[Produccion]): Set[Char] = {
 
