@@ -1,10 +1,7 @@
 import Modelo.Gramatica
 import Modelo.Produccion
 
-
 object App {
-
-  
 
   def descubrirNulleables(producciones: Set[Produccion]): Set[Char] = {
 
@@ -175,7 +172,17 @@ object App {
     new Gramatica(g.terminales, g.variables, g.inicial, p)
   }
 
-  def limpiar(gra:Gramatica): Gramatica = {
+  def quitarTerminalesSinUsar(g: Gramatica): Gramatica = {
+    val terminalesUsados = Set() ++ g.producciones.map((p: Produccion) => p.cadena.toList.intersect(g.terminales.toList).toSet).flatten
+    new Gramatica(terminalesUsados, g.variables, g.inicial, g.producciones)
+  }
+
+  def quitarVariablesSinUsar(g: Gramatica): Gramatica = {
+    val variablesUsadas = g.producciones.map((p: Produccion) => p.variable)
+    new Gramatica(g.terminales, variablesUsadas, g.inicial, g.producciones)
+  }
+
+  def limpiar(gra: Gramatica): Gramatica = {
 
     val nulleables = descubrirNulleables(gra.producciones)
     val sinEpsilon = eliminarProduccionesEpsilon(gra, nulleables)
@@ -214,14 +221,17 @@ object App {
     println()
     println("Sin no alcanzables")
     println()
-    println(limpia)
+    println("Limpia: " + limpia)
+    println()
+
+    println("Solo terminales y variables usados: " + quitarVariablesSinUsar(quitarTerminalesSinUsar(limpia)))
     limpia
 
   }
-  
-  def main(args:Array[String]):Unit ={
-      val gra = Importador.importarGramatica("Input/input")
-      limpiar(gra)
 
-  } 
+  def main(args: Array[String]): Unit = {
+    val gra = Importador.importarGramatica("Input/input")
+    limpiar(gra)
+
+  }
 }

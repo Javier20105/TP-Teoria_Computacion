@@ -21,16 +21,13 @@ object CYK {
       if (k == j) {
         List()
       } else {
-        /*println("I: " + i + " K: " + k + " J:" + j)
-        println("X" + i + k + ":" + X(k - i)(i))
-        println("X" + (k + 1) + j + ": " + X(j - (k + 1))(k + 1))
-        println("")*/
+       
         val Xikj = producciones.toList.filter((p: Produccion) => X(k - i)(i).contains(p.cadena.head) && X(j - (k + 1))(k + 1).contains(p.cadena.tail.head)).map(_.variable)
         Xikj ::: recorrerIJ(i, j, X, producciones, k + 1)
       }
     }
     def casoInductivo(X: List[List[List[Char]]], producciones: Set[Produccion], j: Int, cadenaLen: Int, i: Int = 0): List[List[Char]] = {
-      //println("I: " + i + " J:" + j)
+      
       if (j == cadenaLen) {
         List()
       } else {
@@ -46,27 +43,16 @@ object CYK {
         X
       } else {
         val fila = casoInductivo(X, producciones, nivel, cadena.size)
-        /*println("")
-        println("")
-        println("valor fila actual: " + fila)*/
+       
         recursiva(X ::: List(fila), cadena, producciones, nivel + 1)
       }
 
     }
 
     val paso0 = List(casoBase(cadena, g.producciones))
-   /* println("Paso 0: " + paso0)
-    println("Coordenada 0 0 :  " + paso0(0)(0))*/
+   
     val p = g.producciones.filter(_.cadena.size > 1)
-    /*println("producciones no terminales: " + p)
-    println("Caso Inductivo: " + casoInductivo(paso0, p, 1, cadena.size))
-    println("")
-    println("")
-    println("")
-    println("-------------------------------------------------------------------------")
-    println("")
-    println("")
-    println("Resultado: ")*/
+    
     val resultado = recursiva(paso0, cadena, p)
     resultado.foreach { println }
     resultado
@@ -86,6 +72,6 @@ object CYK {
     val g = Importador.importarGramatica("Input/cyk")
     println("Sea G: ")
     println(g)
-    print("La palabra abab pertenece a g? " + perteneceA("weqwe", g))
+    print("La palabra abab pertenece a g? " + perteneceA("abab", g))
   }
 }
