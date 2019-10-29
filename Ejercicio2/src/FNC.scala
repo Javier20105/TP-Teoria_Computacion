@@ -10,7 +10,15 @@ object FNC {
       if (terminales.size == 0) {
         (producciones, sinUsar)
       } else {
-        crearProduccionesTerminales(terminales.tail, sinUsar.tail, producciones + new Produccion(sinUsar.head, terminales.head + ""))
+        
+        val p = g.producciones.filter(_.cadena == terminales.head + "").size match{
+          case 0 => new Produccion(sinUsar.head, terminales.head + "")
+          case _ =>  g.producciones.filter(_.cadena == terminales.head + "").head
+          
+        }
+       
+        crearProduccionesTerminales(terminales.tail, sinUsar.tail, producciones + p)
+        
       }
     }
 
@@ -77,7 +85,7 @@ object FNC {
 
     println("")
     println("produccionesTerminales: " + produccionesTerminales)
-    println("producciones din terminales. " + produccionesSinTerminales)
+    println("producciones sin terminales. " + produccionesSinTerminales)
     println("producciones en FNC: " + produccionesFNC)
     null
   }
