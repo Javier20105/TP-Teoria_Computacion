@@ -172,16 +172,6 @@ object App {
     new Gramatica(g.terminales, g.variables, g.inicial, p)
   }
 
-  def quitarTerminalesSinUsar(g: Gramatica): Gramatica = {
-    val terminalesUsados = Set() ++ g.producciones.map((p: Produccion) => p.cadena.toList.intersect(g.terminales.toList).toSet).flatten + g.inicial
-    new Gramatica(terminalesUsados, g.variables, g.inicial, g.producciones)
-  }
-
-  def quitarVariablesSinUsar(g: Gramatica): Gramatica = {
-    val variablesUsadas = g.producciones.map((p: Produccion) => p.variable)
-    new Gramatica(g.terminales, variablesUsadas, g.inicial, g.producciones)
-  }
-
   def limpiar(gra: Gramatica): Gramatica = {
 
     val nulleables = descubrirNulleables(gra.producciones)
@@ -192,6 +182,7 @@ object App {
     val sinNoGeneradores = eliminarNoGeneradores(sinUnitarias, simbolosGeneradores)
     val simbolosAlcazables = descubrirAlcanzables(sinUnitarias)
     val sinNoAlcanzables = eliminarNoAlcanzables(sinNoGeneradores, simbolosAlcazables)
+    val limpia = Gramatica.actualizarVariables(Gramatica.quitarTerminalesSinUsar(sinNoAlcanzables))
 
     /*println("Gramatica: ")
     println(gra)
@@ -220,13 +211,13 @@ object App {
     println(simbolosAlcazables)
     println()
     println("Sin no alcanzables")
-    println()
+    println()*/
     println("Limpia: " + limpia)
     println()
 
-    println("Solo terminales y variables usados: " + quitarVariablesSinUsar(quitarTerminalesSinUsar(limpia)))*/
-    quitarVariablesSinUsar(quitarTerminalesSinUsar(sinNoAlcanzables))
+   
 
+    limpia
   }
 
   def main(args: Array[String]): Unit = {

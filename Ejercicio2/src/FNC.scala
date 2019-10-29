@@ -10,15 +10,15 @@ object FNC {
       if (terminales.size == 0) {
         (producciones, sinUsar)
       } else {
-        
-        val p = g.producciones.filter(_.cadena == terminales.head + "").size match{
+
+        val p = g.producciones.filter(_.cadena == terminales.head + "").size match {
           case 0 => new Produccion(sinUsar.head, terminales.head + "")
-          case _ =>  g.producciones.filter(_.cadena == terminales.head + "").head
-          
+          case _ => g.producciones.filter(_.cadena == terminales.head + "").head
+
         }
-       
+
         crearProduccionesTerminales(terminales.tail, sinUsar.tail, producciones + p)
-        
+
       }
     }
 
@@ -28,12 +28,12 @@ object FNC {
       } else {
         new Produccion(p.variable, p.cadena.map((c: Char) => {
           val v = produccionesTerminales.filter(_.cadena.contains(c))
-          if (v.size == 0){
+          if (v.size == 0) {
             c
-          }else
+          } else
             v.head.variable
-            }))
-          
+        }))
+
       }
     }
 
@@ -56,14 +56,6 @@ object FNC {
         } else {
           val pref = new Produccion(p.variable, p.cadena.head + "" + sinUsar.head + "")
           val suf = new Produccion(sinUsar.head, p.cadena.tail)
-          
-          println("Produccion: " + p)
-          println("Prefijo: " + pref)
-          println("Sufijo: " + suf)
-          println("")
-          println("")
-          println("")
-
           reducir(suf, sinUsar.tail, (producciones + pref))
         }
       }
@@ -79,6 +71,7 @@ object FNC {
 
       }
     }
+
     val (produccionesTerminales, sinUsar) = crearProduccionesTerminales(g.terminales, (('A' to 'Z').toList ::: List() ::: List('Ñ')).diff(g.variables.toList))
     val produccionesSinTerminales = reemplazarTerminales(g.producciones, produccionesTerminales) ++ produccionesTerminales
     val produccionesFNC = reducirProducciones(produccionesSinTerminales, sinUsar)
@@ -87,12 +80,13 @@ object FNC {
     println("produccionesTerminales: " + produccionesTerminales)
     println("producciones sin terminales. " + produccionesSinTerminales)
     println("producciones en FNC: " + produccionesFNC)
-    null
+    Gramatica.actualizarVariables(new Gramatica(g.terminales, g.variables, g.inicial, produccionesFNC))
+
   }
 
   def main(args: Array[String]): Unit = {
     val g = Importador.importarGramatica("Input/fnc")
-    convertir(Importador.importarGramatica("Input/fnc"))
-    print("")
+    val c = convertir(Importador.importarGramatica("Input/fnc"))
+    println("En fnc: " + c)
   }
 }
