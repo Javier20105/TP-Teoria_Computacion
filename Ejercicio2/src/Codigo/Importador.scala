@@ -1,3 +1,5 @@
+package Codigo
+
 import Modelo.Gramatica
 import Modelo.Produccion
 import scala.io.Source
