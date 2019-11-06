@@ -20,8 +20,12 @@ object Importador {
     val terminales = lineas.next.toSet
     val variables = lineas.next.toSet
     val inicial = lineas.next.charAt(0)
-    val producciones = crearProducciones(lineas.next().split(","))
+    if(lineas.hasNext){
+      val producciones = crearProducciones(lineas.next().split(","))
+      new Gramatica(terminales, variables, inicial, producciones)
+    }else{
+      new Gramatica(terminales, variables, inicial, Set())
 
-    new Gramatica(terminales, variables, inicial, producciones)
+    }
   }
 }

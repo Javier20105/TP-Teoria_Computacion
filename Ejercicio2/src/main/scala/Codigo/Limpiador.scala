@@ -9,17 +9,13 @@ object Limpiador {
 
     def esNulleable(p: Produccion, n: Set[Char]): Boolean = {
       p.cadena.map(n.contains(_)).fold(true)(_ && _)
-
     }
-
     def casoBase(producciones: Set[Produccion]): Set[Char] = {
       producciones.filter(_.esEpsilon).map(_.variable)
     }
-
-    def casoInductivo(anterior: Set[Char], producciones: Set[Produccion]): Set[Char] = {
-      anterior ++ producciones.filter(esNulleable(_, anterior)).map(_.variable)
+    def casoInductivo(nulleables: Set[Char], producciones: Set[Produccion]): Set[Char] = {
+      nulleables ++ producciones.filter(esNulleable(_, nulleables)).map(_.variable)
     }
-
     def recursiva(anterior: Set[Char], actual: Set[Char], producciones: Set[Produccion]): Set[Char] = {
       if (anterior == actual) {
         return actual
@@ -28,7 +24,6 @@ object Limpiador {
         recursiva(actual, siguiente, producciones)
       }
     }
-
     val paso0 = casoBase(producciones)
     val paso1 = casoInductivo(paso0, producciones)
     recursiva(paso0, paso1, producciones)
