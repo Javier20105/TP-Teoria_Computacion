@@ -171,7 +171,7 @@ object Limpiador {
     val sinNoAlcanzables = eliminarNoAlcanzables(sinNoGeneradores, simbolosAlcazables)
     val limpia = Gramatica.actualizarVariables(Gramatica.quitarTerminalesSinUsar(sinNoAlcanzables))
 
-    /*println("Gramatica: ")
+    println("Gramatica: ")
     println(gra)
     println()
     println("Nulleables: " + nulleables)
@@ -198,7 +198,7 @@ object Limpiador {
     println(simbolosAlcazables)
     println()
     println("Sin no alcanzables")
-    println()*/
+    println()
     println("Limpia: " + limpia)
     println()
 

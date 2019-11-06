@@ -46,6 +46,7 @@ class LimpiadorTest extends UnitSpec {
 
   //eliminarProduccionesEpsilon: toma una gramatica y un conjunto de simbolos, y los elimina de la gramatica
   val rutaEliminarEpsilon = "input/Limpiador/eliminar_producciones_epsilon/"
+
   //crearParesUnitarios: toma una gramatica y retorna el conjunto de pares unitarios
   val rutaCrearParesUnitarios = "input/Limpiador/crear_pares_unitarios/"
 
@@ -65,6 +66,13 @@ class LimpiadorTest extends UnitSpec {
     val pares_test = Set(('S','S'),('A','A'),('B','B'),('C','C'),('S','A'),('S','B'),('S','C'),('A','B'),('A','C'),('B','C'))
     assert(pares_test == Limpiador.crearParesUnitarios(g_importada))
 
+    val g_importada1 = Importador.importarGramatica(rutaCrearParesUnitarios+ "casoDerivacionEncadenaConBifurcacion")
+    val pares_test1 = Set(('S','S'),('A','A'),('B','B'),('C','C'),('D','D'),('E','E'),('F','F'),('S','A'),('S','B'),('S','C'),('S','D'),('S','E'),('S','F'),('A','B'),('A','C'),('B','C'),('D','E'),('D','F'),('E','F'),('A','D'),('A','E'),('A','F'),('F','C'),('E','C'),('D','C'))
+    assert(pares_test1 == Limpiador.crearParesUnitarios(g_importada1))
+
+    val g_importada2 = Importador.importarGramatica(rutaCrearParesUnitarios + "casoDerivacionConCiclo")
+    val pares_test2 = Set(('S','S'),('A','A'),('B','B'),('C','C'),('S','A'),('S','B'),('S','C'),('A','S'),('A','B'),('A','C'),('B','S'),('B','A'),('B','C'),('C','S'),('C','A'),('C','B'))
+    assert(pares_test2 == Limpiador.crearParesUnitarios(g_importada2))
   }
 
 
