@@ -37,11 +37,9 @@ object Limpiador {
     def quitar(s: String, index: Int): String = {
       s.slice(0, index) + s.slice(index + 1, s.size)
     }
-
     def nulleablesEnProduccion(p: Produccion, c: List[Char]): List[Char] = {
       p.cadena.toList.filter(c.contains(_))
     }
-
     def recursiva(p: Produccion, nulleables: List[Char], index: Int): Set[Produccion] = {
       if (nulleables.size == 0) {
         Set(p)
@@ -49,9 +47,7 @@ object Limpiador {
         val n = nulleables.tail
         val i = index + encontrarPrimero(p.cadena.slice(index, p.cadena.size), nulleables.head)
         recursiva(p, n, i) ++ recursiva(new Produccion(p.variable, quitar(p.cadena, i)), n, i)
-
       }
-
     }
 
     def produccionSinEpsilon(p: Produccion, nulleables: List[Char]): Set[Produccion] = {
@@ -63,21 +59,18 @@ object Limpiador {
   }
 
   def crearParesUnitarios(g: Gramatica): Set[(Char, Char)] = {
-
     def casoBase(v: Set[Char]): Set[(Char, Char)] = {
       v.map((c: Char) => (c, c))
     }
-
     def casoInductivo(pares: Set[(Char, Char)], unitarias: Set[Produccion]): Set[(Char, Char)] = {
       if (unitarias.size == 0) {
-        return Set()
+        return pares
       } else {
         val p = unitarias.head
         val r = pares.filter(_._2 == p.variable)
         pares ++ r.map((c: (Char, Char)) => (c._1, p.cadena.charAt(0))) ++ casoInductivo(pares, unitarias.tail)
       }
     }
-
     def recursiva(anterior: Set[(Char, Char)], actual: Set[(Char, Char)], unitarias: Set[Produccion]): Set[(Char, Char)] = {
       if (anterior == actual) {
         actual
@@ -86,12 +79,9 @@ object Limpiador {
         recursiva(actual, siguiente, unitarias)
       }
     }
-
     val unitarias = g.producciones.filter(_.esUnitaria())
-
     val paso0 = casoBase(g.variables)
     val paso1 = casoInductivo(paso0, unitarias)
-
     recursiva(paso0, paso1, unitarias)
   }
 

@@ -7,6 +7,7 @@ abstract class UnitSpec extends FlatSpec with Matchers with OptionValues with In
 class LimpiadorTest extends UnitSpec {
   //descubrirulleables: Este metodo toma un conjunto de producciones y retorna el conjunto de simbolos nulleables
   val rutaDescubrirNulleables = "input/Limpiador/descubrir_nulleables/"
+
   "El limpiador" should "encontrar todos los simbolos nulleables de una gramatica " in{
     val g_importada = Importador.importarGramatica(rutaDescubrirNulleables + "caso1_EncontrarTodosNulleables")
     val nulleables_test = Set('S','A','B')
@@ -43,7 +44,30 @@ class LimpiadorTest extends UnitSpec {
     assert(nulleables_test == Limpiador.descubrirNulleables(g_importada.producciones))
   }
 
-  //
+  //eliminarProduccionesEpsilon: toma una gramatica y un conjunto de simbolos, y los elimina de la gramatica
+  val rutaEliminarEpsilon = "input/Limpiador/eliminar_producciones_epsilon/"
+  //crearParesUnitarios: toma una gramatica y retorna el conjunto de pares unitarios
+  val rutaCrearParesUnitarios = "input/Limpiador/crear_pares_unitarios/"
+
+  "El Limpiador" should "encontrar todos los pares unitarios de un conjunto de producciones" in {
+    val g_importada = Importador.importarGramatica(rutaCrearParesUnitarios + "casoEncontraraTodosLosParesUnitarios")
+    val pares_test =Set(('S','S'),('A','A'),('B','B'),('C','C'),('D','D'),('A','C'),('B','A'),('B','C'),('A','D'),('B','D'),('C','D'))
+    assert(pares_test == Limpiador.crearParesUnitarios(g_importada))
+  }
+  it should "encontrar solo los pares (A,A) con A en V el conjuntos de variables, si la gramatica no tiene producciones unitarias" in{
+    val g_importada = Importador.importarGramatica(rutaCrearParesUnitarios + "casoSinProduccionesUnitarias")
+    val pares_test = Set(('S','S'),('A','A'),('B','B'),('C','C'),('D','D'))
+    print("Me esta dando: " + Limpiador.crearParesUnitarios(g_importada))
+    assert(pares_test == Limpiador.crearParesUnitarios(g_importada))
+  }
+  it should "encontrar todas las variables tal que A=>*B solo con pares unitarios" in{
+    val g_importada = Importador.importarGramatica(rutaCrearParesUnitarios+ "casoDerivacionEncadena")
+    val pares_test = Set(('S','S'),('A','A'),('B','B'),('C','C'),('S','A'),('S','B'),('S','C'),('A','B'),('A','C'),('B','C'))
+    assert(pares_test == Limpiador.crearParesUnitarios(g_importada))
+
+  }
+
+
   
   
 

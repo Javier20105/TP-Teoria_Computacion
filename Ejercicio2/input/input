@@ -1,4 +1,4 @@
-abcdefghi
-SABCDE
+abcd
+SABCD
 S
-S->Ab,A->a,B->CD,C->ε,D->ε,E->CaB
+S->ABCD,A->a,B->b,C->c,D->AB
