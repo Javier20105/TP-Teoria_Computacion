@@ -195,6 +195,45 @@ class LimpiadorTest extends UnitSpec {
 
   }
 
+  //eliminarNoGeneradores: Toma una gramatica y elimina los simbolos no generadores
+  val rutaEliminarNoGeneradores = "input/Limpiador/eliminar_no_generadores/"
+
+  "El Limpiador" should "eliminar todos los simbolos no generadores de una gramatica" in{
+    val g_importada = Importador.importarGramatica(rutaEliminarNoGeneradores + "caso1_eliminarTodosNoGeneradores")
+    val producciones = Set(Produccion('A',"a"),Produccion('S',"A"))
+    val g_test = Gramatica(g_importada.terminales,g_importada.variables,g_importada.inicial,producciones)
+    assert(g_test == Limpiador.eliminarNoGeneradores(g_importada))
+  }
+
+  it should "no cambiar nada si todas las variables son generadoras" in {
+    val g_importada = Importador.importarGramatica(rutaEliminarNoGeneradores + "caso2_todasVaraiblesGeneradoras")
+    assert(g_importada == Limpiador.eliminarNoGeneradores(g_importada))
+  }
+
+  it should "eliminar todas las producciones si ninguna variable es generadora" in {
+    val g_importada = Importador.importarGramatica(rutaEliminarNoGeneradores + "caso3_ningunaGeneradora")
+    val g_test = Gramatica(g_importada.terminales,g_importada.variables,g_importada.inicial,Set())
+    assert(g_test == Limpiador.eliminarNoGeneradores(g_importada))
+
+  }
+  it should "no hacer nada si la gramatica no tiene producciones" in {
+    val g_importada = Importador.importarGramatica(rutaEliminarNoGeneradores + "caso4_sinProducciones")
+    assert(g_importada == Limpiador.eliminarNoGeneradores(g_importada))
+  }
+
+  it should "incluir todas las producciones cuya parte derecha esta compueste unicamente por terminales o generadores" in {
+    val g_importada = Importador.importarGramatica(rutaEliminarNoGeneradores + "caso5_incluirTerminalesParteDerecha")
+    val g_test = Limpiador.eliminarNoGeneradores(g_importada)
+    assert(g_test.producciones.contains(Produccion('A',"abc")))
+    assert(g_test.producciones.contains(Produccion('B',"b")))
+    assert(g_test.producciones.contains(Produccion('C',"ca")))
+    assert(g_test.producciones.contains(Produccion('S',"ABC")))
+    assert(g_test.producciones.contains(Produccion('A',"BC")))
+    assert(!g_test.producciones.contains(Produccion('D',"BDCs")))
+  }
+
+
+
 
 
 

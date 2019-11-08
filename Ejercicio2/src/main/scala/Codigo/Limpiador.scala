@@ -121,9 +121,10 @@ object Limpiador {
 
   }
 
-  def eliminarNoGeneradores(g: Gramatica, generadores: Set[Char]): Gramatica = {
+  def eliminarNoGeneradores(g: Gramatica): Gramatica = {
+    val generadores = descubrirGeneradores(g)
     val p = g.producciones.filter((p: Produccion) => ((Set() + p.variable) ++ p.cadena) -- generadores == Set())
-    new Gramatica(g.terminales, g.variables, g.inicial, p)
+    Gramatica(g.terminales, g.variables, g.inicial, p)
   }
 
   def descubrirAlcanzables(g: Gramatica): Set[Char] = {
@@ -163,8 +164,8 @@ object Limpiador {
     val sinEpsilon = eliminarProduccionesEpsilon(gra)
     //val paresUnitarios = crearParesUnitarios(sinEpsilon)
     val sinUnitarias = eliminarProduccionesUnitarias(sinEpsilon)
-    val simbolosGeneradores = descubrirGeneradores(sinUnitarias)
-    val sinNoGeneradores = eliminarNoGeneradores(sinUnitarias, simbolosGeneradores)
+    //val simbolosGeneradores = descubrirGeneradores(sinUnitarias)
+    val sinNoGeneradores = eliminarNoGeneradores(sinUnitarias)
     val simbolosAlcazables = descubrirAlcanzables(sinUnitarias)
     val sinNoAlcanzables = eliminarNoAlcanzables(sinNoGeneradores, simbolosAlcazables)
     val limpia = Gramatica.actualizarVariables(Gramatica.quitarTerminalesSinUsar(sinNoAlcanzables))
@@ -185,7 +186,7 @@ object Limpiador {
     println()
     println("Simbolos generadores:")
     println()
-    println(simbolosGeneradores)
+    //println(simbolosGeneradores)
     println()
     println("Sin no generadores:")
     println()
