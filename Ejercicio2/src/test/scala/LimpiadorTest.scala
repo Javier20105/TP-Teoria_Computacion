@@ -251,13 +251,42 @@ class LimpiadorTest extends UnitSpec {
     assert(alcanzables2 == Limpiador.descubrirAlcanzables(g_importada2))
   }
 
-  it should "encontrar a una variable como alcanzable si puede ser derivada desde el simbolo inicial" in {
+  it should "encontrar a una variable o terminal como alcanzable si puede ser derivada desde el simbolo inicial" in {
     val g_importada = Importador.importarGramatica(rutaDescubrirAlcanzables + "caso3_alcanzablePorS")
-    val alcanzables = Set('S','A','B','C')
+    val alcanzables = Set('S','A','B','C','a','b')
     assert(alcanzables == Limpiador.descubrirAlcanzables(g_importada))
   }
 
-  
+  //eliminarNoAlcanzables: Toma una gramatica y elimina los simbolos no alcanzables
+  val eliminarNoAlcanzables = "input/Limpiador/eliminar_no_alcanzables/"
+
+  "El Limpiador" should "eliminar todas producciones con variables no alcanzables de una gramatica" in {
+    val g_importada = Importador.importarGramatica(eliminarNoAlcanzables + "caso1_eliminarTodosNoAlcanzables")
+    val producciones = Set(Produccion('S',"ABC"),Produccion('A',"F"),Produccion('F',"G"),Produccion('G',"H"))
+    val g_test = Gramatica(g_importada.terminales,g_importada.variables,g_importada.inicial,producciones)
+    assert(g_test == Limpiador.eliminarNoAlcanzables(g_importada))
+  }
+
+  it should "no cambiar nada si todas las variables y terminales son alcanzables" in {
+    val g_importada = Importador.importarGramatica(eliminarNoAlcanzables + "caso2_todosAlcanzables")
+    assert(g_importada == Limpiador.eliminarNoGeneradores(g_importada))
+  }
+
+  it should "no cambiar nada si la gramatica no tiene producciones" in {
+    val g_importada = Importador.importarGramatica(eliminarNoAlcanzables + "caso3_sinProducciones")
+    assert(g_importada == Limpiador.eliminarNoGeneradores(g_importada))
+  }
+
+  it should "eliminar todas las producciones si no hay ninguna produccion que porvenga del simbolo inicial" in {
+    val g_importada = Importador.importarGramatica(eliminarNoAlcanzables + "caso4_sinProduccionesS")
+    val g_test = Gramatica(g_importada.terminales,g_importada.variables,g_importada.inicial,Set())
+    assert(g_test == Limpiador.eliminarNoAlcanzables(g_importada))
+  }
+
+
+
+
+
 
 
 
