@@ -1,6 +1,7 @@
 import org.scalatest._
 import Codigo.Importador
 import Codigo.Limpiador
+import Modelo._
 
 abstract class UnitSpec extends FlatSpec with Matchers with OptionValues with Inside with Inspectors
 
@@ -46,6 +47,55 @@ class LimpiadorTest extends UnitSpec {
 
   //eliminarProduccionesEpsilon: toma una gramatica y un conjunto de simbolos, y los elimina de la gramatica
   val rutaEliminarEpsilon = "input/Limpiador/eliminar_producciones_epsilon/"
+
+  "El Limpiador" should "eliminar todas las producciones epsilon de un gramatica" in {
+    val g_importada = Importador.importarGramatica(rutaEliminarEpsilon + "caso1_eliminarNulleables")
+    val producciones = Set(Produccion('S',"ABC"),Produccion('S',"AC"),Produccion('S',"BC"),Produccion('S',"C"),Produccion('C',"a"))
+    val g_test = Gramatica(g_importada.terminales,g_importada.variables,g_importada.inicial, producciones)
+    assert(g_test == Limpiador.eliminarProduccionesEpsilon(g_importada))
+  }
+
+  it should "no cambiar nada si la gramatica no tiene producciones epsilon" in {
+    val g_importada1 = Importador.importarGramatica(rutaEliminarEpsilon + "caso2.1_sinProduccionesEpsilon")
+    assert(g_importada1 == Limpiador.eliminarProduccionesEpsilon(g_importada1))
+
+    val g_importada2 = Importador.importarGramatica(rutaEliminarEpsilon + "caso2.2_sinProduccionesEpsilon")
+    assert(g_importada2 == Limpiador.eliminarProduccionesEpsilon(g_importada2))
+
+    val g_importada3 = Importador.importarGramatica(rutaEliminarEpsilon + "caso2.3_sinProducciones")
+    assert(g_importada3 == Limpiador.eliminarProduccionesEpsilon(g_importada3))
+
+  }
+  it should "eliminar todas las producciones si la gramatica solo tiene producciones epsilon" in {
+    val g_importada = Importador.importarGramatica(rutaEliminarEpsilon + "caso3_soloProduccionesEpsilon")
+    val g_test = Gramatica(g_importada.terminales,g_importada.variables,g_importada.inicial,Set())
+    assert(g_test == Limpiador.eliminarProduccionesEpsilon(g_importada))
+  }
+
+  it should "contener todas las versiones de una gramaticas cuyo lado derecho esta compuesto por simbolos nulleables" in {
+    val g_importada = Importador.importarGramatica(rutaEliminarEpsilon + "caso4_todasLasVersiones")
+    val g_test = Limpiador.eliminarProduccionesEpsilon(g_importada)
+    assert(g_test.producciones.contains(Produccion('S',"ABC")))
+    assert(g_test.producciones.contains(Produccion('S',"AB")))
+    assert(g_test.producciones.contains(Produccion('S',"AC")))
+    assert(g_test.producciones.contains(Produccion('S',"A")))
+    assert(g_test.producciones.contains(Produccion('S',"BC")))
+    assert(g_test.producciones.contains(Produccion('S',"C")))
+    assert(g_test.producciones.contains(Produccion('S',"B")))
+  }
+
+  it should "mantener el orden realitivo de los simbolos no nulleables en todas las versiones de un gramatica" in {
+    val g_importada = Importador.importarGramatica(rutaEliminarEpsilon + "caso5_ordenRelativo")
+    val g_test = Limpiador.eliminarProduccionesEpsilon(g_importada)
+    assert(g_test.producciones.contains(Produccion('S',"AaBsC")))
+    assert(g_test.producciones.contains(Produccion('S',"AaBs")))
+    assert(g_test.producciones.contains(Produccion('S',"AasC")))
+    assert(g_test.producciones.contains(Produccion('S',"Aas")))
+    assert(g_test.producciones.contains(Produccion('S',"aBsC")))
+    assert(g_test.producciones.contains(Produccion('S',"asC")))
+    assert(g_test.producciones.contains(Produccion('S',"aBs")))
+  }
+
 
   //crearParesUnitarios: toma una gramatica y retorna el conjunto de pares unitarios
   val rutaCrearParesUnitarios = "input/Limpiador/crear_pares_unitarios/"

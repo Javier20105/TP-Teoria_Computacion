@@ -12,3 +12,7 @@ case class Produccion(v: Char, c: String) {
     }
 
 }
+
+object Produccion{
+  def apply(c:Char,s:String):Produccion = new Produccion(c,s)
+}

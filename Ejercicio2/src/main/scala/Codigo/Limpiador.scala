@@ -29,7 +29,7 @@ object Limpiador {
     recursiva(paso0, paso1, producciones)
   }
 
-  def eliminarProduccionesEpsilon(g: Gramatica, nulleables: Set[Char]): Gramatica = {
+  def eliminarProduccionesEpsilon(g: Gramatica): Gramatica = {
 
     def encontrarPrimero(s: String, c: Char): Int = {
       s.indexOf(c)
@@ -40,7 +40,7 @@ object Limpiador {
     def nulleablesEnProduccion(p: Produccion, c: List[Char]): List[Char] = {
       p.cadena.toList.filter(c.contains(_))
     }
-    def recursiva(p: Produccion, nulleables: List[Char], index: Int): Set[Produccion] = {
+    def recursiva(p: Produccion, nulleables: List[Char], index: Int = 0): Set[Produccion] = {
       if (nulleables.size == 0) {
         Set(p)
       } else {
@@ -50,12 +50,9 @@ object Limpiador {
       }
     }
 
-    def produccionSinEpsilon(p: Produccion, nulleables: List[Char]): Set[Produccion] = {
-      recursiva(p, nulleablesEnProduccion(p, nulleables), 0)
-    }
-
-    val resul = g.producciones.map(produccionSinEpsilon(_, nulleables.toList))
-    new Gramatica(g.terminales, g.variables, g.inicial, resul.flatten.filter(_.cadena != "ε").filter(_.cadena != ""))
+    val nulleables = descubrirNulleables(g.producciones)
+    val resul = g.producciones.map((p:Produccion) => recursiva(p, nulleablesEnProduccion(p, nulleables.toList)))
+    Gramatica(g.terminales, g.variables, g.inicial, resul.flatten.filter(_.cadena != "ε").filter(_.cadena != ""))
   }
 
   def crearParesUnitarios(g: Gramatica): Set[(Char, Char)] = {
@@ -161,8 +158,8 @@ object Limpiador {
 
   def limpiar(gra: Gramatica): Gramatica = {
 
-    val nulleables = descubrirNulleables(gra.producciones)
-    val sinEpsilon = eliminarProduccionesEpsilon(gra, nulleables)
+    //val nulleables = descubrirNulleables(gra.producciones)
+    val sinEpsilon = eliminarProduccionesEpsilon(gra)
     val paresUnitarios = crearParesUnitarios(sinEpsilon)
     val sinUnitarias = eliminarProduccionesUnitarias(sinEpsilon, paresUnitarios)
     val simbolosGeneradores = descubrirGeneradores(sinUnitarias)
@@ -174,7 +171,7 @@ object Limpiador {
     println("Gramatica: ")
     println(gra)
     println()
-    println("Nulleables: " + nulleables)
+    //println("Nulleables: " + nulleables)
     println()
     println("Sin epsilon: ")
     println(sinEpsilon)

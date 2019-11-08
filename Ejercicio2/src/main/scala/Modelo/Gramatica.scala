@@ -11,6 +11,9 @@ case class Gramatica(t: Set[Char], vars: Set[Char], ini: Char, prod: Set[Producc
 }
 
 object Gramatica {
+
+  def apply(t: Set[Char], vars: Set[Char], ini: Char, prod: Set[Produccion]): Gramatica = new Gramatica(t, vars, ini, prod)
+
   def quitarTerminalesSinUsar(g: Gramatica): Gramatica = {
     val terminalesUsados = Set() ++ g.producciones.map((p: Produccion) => p.cadena.toList.intersect(g.terminales.toList).toSet).flatten
     new Gramatica(terminalesUsados, g.variables, g.inicial, g.producciones)
