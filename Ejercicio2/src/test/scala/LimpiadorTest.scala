@@ -232,6 +232,38 @@ class LimpiadorTest extends UnitSpec {
     assert(!g_test.producciones.contains(Produccion('D',"BDCs")))
   }
 
+  //descubrirAlcanzables: Recibe una gramatica y retorna los simbolos alcanzables
+  val rutaDescubrirAlcanzables = "input/Limpiador/descubrir_alcanzables/"
+
+  "El Limpiador" should "descubrir todos lo simsbolos alcanzables de una gramatica" in {
+    val g_importada = Importador.importarGramatica(rutaDescubrirAlcanzables + "caso1_encontrarTodosLosAlacanzables")
+    val alcanzables =Set('S','A','B','C','E')
+    assert(alcanzables == Limpiador.descubrirAlcanzables(g_importada))
+  }
+
+  it should "encontrar unicamente al simbolo inicial si no hay una produccion que provenga de S" in {
+    val g_importada = Importador.importarGramatica(rutaDescubrirAlcanzables + "caso2_sinProduccionesS")
+    val alcanzables = Set(g_importada.inicial)
+    assert(alcanzables == Limpiador.descubrirAlcanzables(g_importada))
+
+    val g_importada2 = Importador.importarGramatica(rutaDescubrirAlcanzables + "caso2.1_sinProducciones")
+    val alcanzables2 = Set(g_importada2.inicial)
+    assert(alcanzables2 == Limpiador.descubrirAlcanzables(g_importada2))
+  }
+
+  it should "encontrar a una variable como alcanzable si puede ser derivada desde el simbolo inicial" in {
+    val g_importada = Importador.importarGramatica(rutaDescubrirAlcanzables + "caso3_alcanzablePorS")
+    val alcanzables = Set('S','A','B','C')
+    assert(alcanzables == Limpiador.descubrirAlcanzables(g_importada))
+  }
+
+  
+
+
+
+
+
+
 
 
 
