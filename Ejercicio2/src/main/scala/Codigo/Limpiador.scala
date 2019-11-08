@@ -94,7 +94,7 @@ object Limpiador {
     }
     val paresUnitarios = crearParesUnitarios(g)
     val noUnitarias = g.producciones.filter(!_.esUnitaria())
-    new Gramatica(g.terminales, g.variables, g.inicial, recursiva(paresUnitarios, noUnitarias))
+    Gramatica(g.terminales, g.variables, g.inicial, recursiva(paresUnitarios, noUnitarias))
   }
 
   def descubrirGeneradores(g: Gramatica): Set[Char] = {

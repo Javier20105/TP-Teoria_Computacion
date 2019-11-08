@@ -159,10 +159,46 @@ class LimpiadorTest extends UnitSpec {
     assert(g_test.producciones.contains(Produccion('B',"c")))
   }
 
+  //descubrirGeneradores: Toma una gramatica y devuelve el conjunto simbolo generadores
+  val rutaDescubrirGeneradores = "input/Limpiador/descubrir_generadores/"
+
+  "El Limpiador" should "descurbrir todos los simbolos generadores de una gramatica" in {
+    val g_importada = Importador.importarGramatica(rutaDescubrirGeneradores + "caso1_descubrirTodosLosGeneradores")
+    val generadores =Set('a','b','c','A','C')
+    assert(generadores == Limpiador.descubrirGeneradores(g_importada))
+
+  }
+
+  it should "descubrir unicamente los terminales si ninguna variables es simbolo generador" in {
+    val g_importada = Importador.importarGramatica(rutaDescubrirGeneradores + "caso2.1_sinVariablesGeneradoras")
+    val generadores = Set('a','b','c')
+    assert(generadores == Limpiador.descubrirGeneradores(g_importada))
+
+    val g_importada2 = Importador.importarGramatica(rutaDescubrirGeneradores + "caso2.2_sinVariables")
+    val generadores2 = Set('a','b','c')
+    assert(generadores2 == Limpiador.descubrirGeneradores(g_importada2))
+  }
+
+  it should "encontrar a una variable como simbolo generador si la parte derecha de una de sus producciones esta hecha de simbolos generadores" in {
+    val g_importada = Importador.importarGramatica(rutaDescubrirGeneradores + "caso3_generadoresPorLaParteDerecha")
+    val generadores = Limpiador.descubrirGeneradores(g_importada)
+    assert(generadores.contains('S'))
+    assert(generadores.contains('A'))
+    assert(generadores.contains('B'))
+  }
+  it should "encontrar una variable como simbolo generador si tiene una produccion cuyo lado derecho esta compuesto solo por terminales" in {
+    val g_importada = Importador.importarGramatica(rutaDescubrirGeneradores + "caso4_generadoresProTerminalesEnParteDerecha")
+    val generadores = Limpiador.descubrirGeneradores(g_importada)
+    assert(generadores.contains('A'))
+    assert(generadores.contains('B'))
+
+
+  }
 
 
 
-  
-  
+
+
+
 
 }
