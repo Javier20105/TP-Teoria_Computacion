@@ -82,7 +82,7 @@ object Limpiador {
     recursiva(paso0, paso1, unitarias)
   }
 
-  def eliminarProduccionesUnitarias(g: Gramatica, paresUnitarios: Set[(Char, Char)]): Gramatica = {
+  def eliminarProduccionesUnitarias(g: Gramatica): Gramatica = {
     def recursiva(paresUnitarios: Set[(Char, Char)], peoduccionesNoUnitarias: Set[Produccion]): Set[Produccion] = {
       if (paresUnitarios.size == 0) {
         peoduccionesNoUnitarias
@@ -92,6 +92,7 @@ object Limpiador {
         prodParaAgregar ++ recursiva(paresUnitarios.tail, peoduccionesNoUnitarias)
       }
     }
+    val paresUnitarios = crearParesUnitarios(g)
     val noUnitarias = g.producciones.filter(!_.esUnitaria())
     new Gramatica(g.terminales, g.variables, g.inicial, recursiva(paresUnitarios, noUnitarias))
   }
@@ -160,8 +161,8 @@ object Limpiador {
 
     //val nulleables = descubrirNulleables(gra.producciones)
     val sinEpsilon = eliminarProduccionesEpsilon(gra)
-    val paresUnitarios = crearParesUnitarios(sinEpsilon)
-    val sinUnitarias = eliminarProduccionesUnitarias(sinEpsilon, paresUnitarios)
+    //val paresUnitarios = crearParesUnitarios(sinEpsilon)
+    val sinUnitarias = eliminarProduccionesUnitarias(sinEpsilon)
     val simbolosGeneradores = descubrirGeneradores(sinUnitarias)
     val sinNoGeneradores = eliminarNoGeneradores(sinUnitarias, simbolosGeneradores)
     val simbolosAlcazables = descubrirAlcanzables(sinUnitarias)
@@ -176,7 +177,7 @@ object Limpiador {
     println("Sin epsilon: ")
     println(sinEpsilon)
     println()
-    println("pares unitarios:" + paresUnitarios)
+    //println("pares unitarios:" + paresUnitarios)
     println()
     println("Sin Producciones unitarias:")
     println()

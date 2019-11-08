@@ -125,6 +125,42 @@ class LimpiadorTest extends UnitSpec {
     assert(pares_test2 == Limpiador.crearParesUnitarios(g_importada2))
   }
 
+  //eliminarProduccionesUnitarias: toma una gramatica y elimina sus producciones unitarias
+  val rutaEliminarUnitarios = "input/Limpiador/eliminar_producciones_unitarias/"
+  "El Limpiador" should "eliminar todas las producciones unitarias de una gramatica" in {
+    val g_importada = Importador.importarGramatica(rutaEliminarUnitarios + "caso1_eliminarProduccionesUnirios")
+    val producciones = Set(Produccion('S',"ABC"),Produccion('A',"a"),Produccion('B',"b"),Produccion('C',"c"),Produccion('A',"b"),Produccion('A',"c"),Produccion('B',"c"))
+    val g_test = Gramatica(g_importada.terminales,g_importada.variables,g_importada.inicial,producciones)
+    assert(g_test == Limpiador.eliminarProduccionesUnitarias(g_importada))
+  }
+
+  it should "no cambiar nada si la gramatica no tiene producciones unitarias" in {
+    val g_importada1 = Importador.importarGramatica(rutaEliminarUnitarios + "caso2.1_sinProduccionesUnitarias")
+    assert(g_importada1 == Limpiador.eliminarProduccionesUnitarias(g_importada1))
+
+    val g_importada2 = Importador.importarGramatica(rutaEliminarUnitarios + "caso2.2_sinProducciones")
+    assert(g_importada2 == Limpiador.eliminarProduccionesUnitarias(g_importada2))
+  }
+
+  it should "eliminar todas las producciones si la gramatica solo tiene producciones unitarias" in {
+    val g_importada = Importador.importarGramatica(rutaEliminarUnitarios + "caso3_todasUnitarias")
+    val g_test = Gramatica(g_importada.terminales,g_importada.variables,g_importada.inicial,Set())
+    assert(g_test == Limpiador.eliminarProduccionesUnitarias(g_importada))
+  }
+
+  it should "contener todas las producciones que se agregan por pares unitarios cuyo segundo elemento tiene una producciones no unitaria " in {
+    val g_importada = Importador.importarGramatica(rutaEliminarUnitarios + "caso4_agregarProduccionesDeParesUnitarios")
+    val g_test = Limpiador.eliminarProduccionesUnitarias(g_importada)
+    assert(g_test.producciones.contains(Produccion('S',"a")))
+    assert(g_test.producciones.contains(Produccion('S',"b")))
+    assert(g_test.producciones.contains(Produccion('S',"c")))
+    assert(g_test.producciones.contains(Produccion('A',"b")))
+    assert(g_test.producciones.contains(Produccion('A',"a")))
+    assert(g_test.producciones.contains(Produccion('B',"c")))
+  }
+
+
+
 
   
   
