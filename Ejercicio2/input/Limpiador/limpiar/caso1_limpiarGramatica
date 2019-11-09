@@ -1,0 +1,4 @@
+abcd
+SABCDE
+S
+S->ABCD,A->a,B->b,C->c,D->E,E->a,D->ε

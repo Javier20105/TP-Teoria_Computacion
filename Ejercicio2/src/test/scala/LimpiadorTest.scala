@@ -283,7 +283,37 @@ class LimpiadorTest extends UnitSpec {
     assert(g_test == Limpiador.eliminarNoAlcanzables(g_importada))
   }
 
+//limpiar:Toma una gramatica y elimina la producciones epsilon, las producciones unitarias y los simbolos inutiles
+  val rutaLimpiar = "input/Limpiador/limpiar/"
+  "El Limpiador" should "limpiar apropiadamente una gramatica" in {
+    val g_importada = Importador.importarGramatica(rutaLimpiar+ "caso1_limpiarGramatica")
+    val producciones = Set(Produccion('S',"ABCD"),Produccion('A',"a"),Produccion('S',"ABC"),Produccion('D',"a"),Produccion('B',"b"),Produccion('C',"c"))
+    val g_test = Gramatica(Set('a','b','c'),Set('S','A','B','C','D'),'S',producciones)
+    assert(g_test == Limpiador.limpiar(g_importada))
+  }
 
+  it should "no cambiar nada si no hay producciones epsilon,unitarias y si todos los simbolos son utiles" in {
+    val g_importada = Importador.importarGramatica(rutaLimpiar+ "caso2_noEpsilonNoUnitarioTodoUtil")
+    assert(g_importada == Limpiador.limpiar(g_importada))
+  }
+
+  it should "eliminar todas las producciones, si todos los simbolos son inutiles" in{
+    val g_importada = Importador.importarGramatica(rutaLimpiar+ "caso3_todosInutiles")
+    val g_test = Gramatica(Set(),Set('S'),'S',Set())
+    assert(g_test == Limpiador.limpiar(g_importada))
+  }
+
+  it should "eliminar todas las producciones epsilon de la gramatica" in {
+    val g_importada = Importador.importarGramatica(rutaLimpiar+ "caso4_eliminarEpsilon")
+    val g_test = Limpiador.limpiar(g_importada)
+    assert(!g_test.producciones.map(_.esEpsilon()).fold(false)(_||_))
+  }
+
+  it should "eliminar todas las producciones unitarias de la gramatica" in {
+    val g_importada = Importador.importarGramatica(rutaLimpiar+ "caso5_eliminarUnitaria")
+    val g_test = Limpiador.limpiar(g_importada)
+    assert(!g_test.producciones.map(_.esUnitaria()).fold(false)(_||_))
+  }
 
 
 
