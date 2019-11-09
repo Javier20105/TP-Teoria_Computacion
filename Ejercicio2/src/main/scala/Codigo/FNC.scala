@@ -4,26 +4,27 @@ import Modelo.Gramatica
 import Modelo.Produccion
 
 object FNC {
+  def crearProduccionesTerminales(g:Gramatica): (Set[Produccion], List[Char]) = {
 
-  def convertir(g: Gramatica): Gramatica = {
-
-    def crearProduccionesTerminales(terminales: Set[Char], sinUsar: List[Char], producciones: Set[Produccion] = Set()): (Set[Produccion], List[Char]) = {
-
+    def recursiva(g:Gramatica,terminales:Set[Char], sinUsar:List[Char],producciones:Set[Produccion] = Set()): (Set[Produccion], List[Char]) = {
       if (terminales.size == 0) {
         (producciones, sinUsar)
       } else {
-
         val p = g.producciones.filter(_.cadena == terminales.head + "").size match {
           case 0 => new Produccion(sinUsar.head, terminales.head + "")
           case _ => g.producciones.filter(_.cadena == terminales.head + "").head
-
         }
-
-        crearProduccionesTerminales(terminales.tail, sinUsar.tail, producciones + p)
-
+        recursiva(g,terminales.tail, sinUsar.diff(List(p.variable)), producciones + p)
       }
     }
 
+    recursiva(g,g.terminales, (('A' to 'Z').toList  ::: List('Ñ')).diff(g.variables.toList))
+
+  }
+
+
+
+  def reemplazarTerminales(producciones: Set[Produccion], produccionesTerminales: Set[Produccion]): Set[Produccion] = {
     def quitarTerminalesDeProduccion(p: Produccion, produccionesTerminales: Set[Produccion]): Produccion = {
       if (p.cadena.size == 1) {
         p
@@ -39,14 +40,14 @@ object FNC {
       }
     }
 
-    def reemplazarTerminales(producciones: Set[Produccion], produccionesTerminales: Set[Produccion]): Set[Produccion] = {
-      if (producciones.size == 0) {
-        Set()
-      } else {
-        reemplazarTerminales(producciones.tail, produccionesTerminales) + quitarTerminalesDeProduccion(producciones.head, produccionesTerminales)
-      }
+    if (producciones.size == 0) {
+      Set()
+    } else {
+      reemplazarTerminales(producciones.tail, produccionesTerminales) + quitarTerminalesDeProduccion(producciones.head, produccionesTerminales)
     }
+  }
 
+  def reducirProducciones(producciones: Set[Produccion], sinUsar: List[Char]): Set[Produccion] = {
     def reducir(p: Produccion, sinUsar: List[Char], producciones: Set[Produccion] = Set()): (Set[Produccion], List[Char]) = {
 
       if (p.cadena.size == 1) {
@@ -62,19 +63,20 @@ object FNC {
         }
       }
     }
+    if (producciones.size == 0) {
+      Set()
+    } else {
 
-    def reducirProducciones(producciones: Set[Produccion], sinUsar: List[Char]): Set[Produccion] = {
-      if (producciones.size == 0) {
-        Set()
-      } else {
+      val (p, s) = reducir(producciones.head, sinUsar)
+      p ++ reducirProducciones(producciones.tail, s)
 
-        val (p, s) = reducir(producciones.head, sinUsar)
-        p ++ reducirProducciones(producciones.tail, s)
-
-      }
     }
+  }
 
-    val (produccionesTerminales, sinUsar) = crearProduccionesTerminales(g.terminales, (('A' to 'Z').toList ::: List() ::: List('Ñ')).diff(g.variables.toList))
+  def convertir(g: Gramatica): Gramatica = {
+
+    println("sin usar:" +  (('A' to 'Z').toList ::: List() ::: List('Ñ')).diff(g.variables.toList))
+    val (produccionesTerminales, sinUsar) = crearProduccionesTerminales(g)
     val produccionesSinTerminales = reemplazarTerminales(g.producciones, produccionesTerminales) ++ produccionesTerminales
     val produccionesFNC = reducirProducciones(produccionesSinTerminales, sinUsar)
 
@@ -87,8 +89,7 @@ object FNC {
   }
 
   def main(args: Array[String]): Unit = {
-    val g = Importador.importarGramatica("Input/fnc")
-    val c = convertir(Importador.importarGramatica("Input/fnc"))
+    val c = convertir(Importador.importarGramatica("Input/fnc_input"))
     println("En fnc: " + c)
   }
 }
