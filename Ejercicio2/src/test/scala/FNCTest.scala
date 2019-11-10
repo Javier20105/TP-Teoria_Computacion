@@ -86,5 +86,26 @@ class FNCTest extends UnitSpec{
     assert(g_importada.producciones == FNC.reemplazarTerminales(g_importada.producciones,prod_terminales))
   }
 
+  //convertir: Toma una gramatica y la pasa a FNC. La gramatica debe ser limpiada previamente
+  val rutaConvertir = "input/FNC/convertir/"
+  "FNC" should "pasar correctamente una gramatica a forma normal de chomsky" in {
+    val g_importada = Importador.importarGramatica(rutaConvertir + "caso1_pasar_a_FNC")
+    val terminales = Set('a','b','c')
+    val variables = Set('A','B','C','D','E','F','G','S')
+    val inicial = 'S'
+    val producciones = Set(Produccion('A',"a"),Produccion('B',"b"),Produccion('D',"c"),Produccion('S',"AF"),Produccion('F',"BG"),Produccion('G',"AC"),Produccion('C',"DE"),Produccion('E',"AB"))
+    val g_test = Gramatica(terminales,variables,inicial,producciones)
+    assert(g_test == FNC.convertir(g_importada))
+  }
+
+  it should "no hacer nada si la gramatica ya esta en FNC" in {
+    val g_importada = Importador.importarGramatica(rutaConvertir + "caso2_enFNC")
+    assert(g_importada == FNC.convertir(g_importada))
+  }
+  it should "no hacer nada si la gramatica no tiene terminales ni producciones" in {
+    val g_importada = Importador.importarGramatica(rutaConvertir + "caso3_sinProducciones")
+    assert(g_importada == FNC.convertir(g_importada))
+  }
+
 
 }
