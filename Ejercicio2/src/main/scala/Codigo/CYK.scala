@@ -72,7 +72,7 @@ object CYK {
   }
 
   def main(args: Array[String]): Unit = {
-    val g = Importador.importarGramatica("Input/cyk")
+    val g = Importador.importarGramatica("Input/cyk_input")
     println("Sea G: ")
     println(g)
     print("La palabra abab pertenece a g? " + perteneceA("abab", g))
