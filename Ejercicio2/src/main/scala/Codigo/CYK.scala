@@ -5,30 +5,30 @@ import Modelo.Produccion
 
 object CYK {
 
-  def generarMatriz(cadena: String, g: Gramatica): List[List[List[Char]]] = {
+  def generarMatriz(cadena: String, g: Gramatica): List[List[Set[Char]]] = {
 
-    def casoBase(cadena: String, producciones: Set[Produccion]): List[List[Char]] = {
+    def casoBase(cadena: String, producciones: Set[Produccion]): List[Set[Char]] = {
 
       if (cadena.size == 0) {
         List()
       } else {
-        val r = producciones.toList.filter((p: Produccion) => p.cadena.head == cadena.head && p.cadena.size == 1).map(_.variable)
+        val r = producciones.filter((p: Produccion) => p.cadena.head == cadena.head && p.cadena.size == 1).map(_.variable)
 
         r :: casoBase(cadena.tail, producciones)
       }
     }
 
-    def recorrerIJ(i: Int, j: Int, X: List[List[List[Char]]], producciones: Set[Produccion], k: Int): List[Char] = {
+    def recorrerIJ(i: Int, j: Int, X: List[List[Set[Char]]], producciones: Set[Produccion], k: Int): Set[Char] = {
 
       if (k == j) {
-        List()
+        Set()
       } else {
 
-        val Xikj = producciones.toList.filter((p: Produccion) => X(k - i)(i).contains(p.cadena.head) && X(j - (k + 1))(k + 1).contains(p.cadena.tail.head)).map(_.variable)
-        Xikj ::: recorrerIJ(i, j, X, producciones, k + 1)
+        val Xikj = producciones.filter((p: Produccion) => X(k - i)(i).contains(p.cadena.head) && X(j - (k + 1))(k + 1).contains(p.cadena.tail.head)).map(_.variable)
+        Xikj ++ recorrerIJ(i, j, X, producciones, k + 1)
       }
     }
-    def casoInductivo(X: List[List[List[Char]]], producciones: Set[Produccion], j: Int, cadenaLen: Int, i: Int = 0): List[List[Char]] = {
+    def casoInductivo(X: List[List[Set[Char]]], producciones: Set[Produccion], j: Int, cadenaLen: Int, i: Int = 0): List[Set[Char]] = {
 
       if (j == cadenaLen) {
         List()
@@ -40,7 +40,7 @@ object CYK {
 
     }
 
-    def recursiva(X: List[List[List[Char]]], cadena: String, producciones: Set[Produccion], nivel: Int = 1): List[List[List[Char]]] = {
+    def recursiva(X: List[List[Set[Char]]], cadena: String, producciones: Set[Produccion], nivel: Int = 1): List[List[Set[Char]]] = {
       if (nivel == cadena.size) {
         X
       } else {

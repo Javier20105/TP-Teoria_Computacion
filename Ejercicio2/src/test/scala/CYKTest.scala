@@ -13,17 +13,17 @@ class CYKTest extends UnitSpec {
     //la S esta en el nivel superior de la cadena si y solo si c pertenece al lenguaje de la gramatica
     val g_importada = Importador.importarGramatica(rutaGenerarMatriz + "caso1_palabraenLenguaje")
     val cadena = "abab"
-    val matriz = List(List(List('A'), List('B'), List('A'), List('B')),   List(List('D'), List(), List('D')),     List(List(), List('C')),    List(List('S')))
+    val matriz = List(List(Set('A'), Set('B'), Set('A'), Set('B')),   List(Set('D'), Set(), Set('D')),     List(Set(), Set('C')),    List(Set('S')))
     assert(matriz == CYK.generarMatriz(cadena,g_importada))
 
 
     //para cualquier otra parlabras no debe estar la S
     val cadena1 = "bbaaba"
-    val matriz1 = List(List(List('B'), List('B'), List('A'), List('A'), List('B'), List('A')),     List(List(), List(), List(), List('D'), List()),     List(List(), List(), List(), List()),      List(List(), List(), List()),     List(List(), List()),     List(List()))
+    val matriz1 = List(List(Set('B'), Set('B'), Set('A'), Set('A'), Set('B'), Set('A')),     List(Set(), Set(), Set(), Set('D'), Set()),     List(Set(), Set(), Set(), Set()),      List(Set(), Set(), Set()),     List(Set(), Set()),     List(Set()))
     assert(matriz1 == CYK.generarMatriz(cadena1,g_importada))
     val cadena2 = "aab"
-    val matriz2 = List(List(List('A'), List('A'), List('B')),      List(List(), List('D')),      List(List()))
-    assert(matriz == CYK.generarMatriz(cadena2,g_importada))
+    val matriz2 = List(List(Set('A'), Set('A'), Set('B')),      List(Set(), Set('D')),      List(Set()))
+    assert(matriz2 == CYK.generarMatriz(cadena2,g_importada))
    /* val matriz2 = CYK.generarMatriz(cadena2, g_importada).reverse
     assert(!matriz2.head.head.contains('S'))
     assert(matriz2.length == cadena2.length)
@@ -36,26 +36,26 @@ class CYKTest extends UnitSpec {
 
     val g_importada = Importador.importarGramatica(rutaGenerarMatriz + "caso2_masDeUnaPalabraEnLenguaje")
     val cadena = "c"
-    val matriz = List(List(List('S')))
+    val matriz = List(List(Set('S')))
     assert(matriz == CYK.generarMatriz(cadena,g_importada))
 
     val cadena1 = "acb"
-    val matriz1 = List(List(List('A'), List('S'), List('B')),      List(List(), List('C')),      List(List('S')))
+    val matriz1 = List(List(Set('A'), Set('S'), Set('B')),      List(Set(), Set('C')),      List(Set('S')))
     assert(matriz1 == CYK.generarMatriz(cadena1,g_importada))
     val cadena2 = "aacbb"
-    val matriz2 = List(List(List('A'), List('A'), List('S'), List('B'), List('B')),      List(List(), List(), List('C'), List()),      List(List(), List('S'), List()),      List(List(), List('C')),      List(List('S')))
+    val matriz2 = List(List(Set('A'), Set('A'), Set('S'), Set('B'), Set('B')),      List(Set(), Set(), Set('C'), Set()),      List(Set(), Set('S'), Set()),      List(Set(), Set('C')),      List(Set('S')))
     assert(matriz2 == CYK.generarMatriz(cadena2,g_importada))
 
     val cadena3 = "aaacbbb"
-    val matriz3 = List(List(List('A'), List('A'), List('A'), List('S'), List('B'), List('B'), List('B')),      List(List(), List(), List(), List('C'), List(), List()),      List(List(), List(), List('S'), List(), List()),      List(List(), List(), List('C'), List()),      List(List(), List('S'), List()),      List(List(), List('C')),      List(List('S')))
+    val matriz3 = List(List(Set('A'), Set('A'), Set('A'), Set('S'), Set('B'), Set('B'), Set('B')),      List(Set(), Set(), Set(), Set('C'), Set(), Set()),      List(Set(), Set(), Set('S'), Set(), Set()),      List(Set(), Set(), Set('C'), Set()),      List(Set(), Set('S'), Set()),      List(Set(), Set('C')),      List(Set('S')))
     assert(matriz3 == CYK.generarMatriz(cadena3,g_importada))
     //para una palabra que no pertenesca al lenguaje no debe estar la S en el ultimo nivel
     val cadena4 = "aaabbb"
-    val matriz4 = List(List(List('A'),List('A'),List('A'),List('B'),List('B'),List('B')),     List(List(),List(),List(),List(),List()),    List(List(),List(),List(),List()),     List(List(),List(),List()),      List(List(),List()),     List(List())      )
+    val matriz4 = List(List(Set('A'),Set('A'),Set('A'),Set('B'),Set('B'),Set('B')),     List(Set(),Set(),Set(),Set(),Set()),    List(Set(),Set(),Set(),Set()),     List(Set(),Set(),Set()),      List(Set(),Set()),     List(Set())      )
     assert(matriz4 == CYK.generarMatriz(cadena4,g_importada))
 
     val cadena5 = "bacba"
-    val matriz5 = List(List(List('B'),List('A'),List('S'),List('B'),List('A')), List(List(),List(),List('C'),List()), List(List(),List('S'),List()),  List(List(),List()),List(List())          )
+    val matriz5 = List(List(Set('B'),Set('A'),Set('S'),Set('B'),Set('A')), List(Set(),Set(),Set('C'),Set()), List(Set(),Set('S'),Set()),  List(Set(),Set()),List(Set())          )
     assert(matriz5 == CYK.generarMatriz(cadena5,g_importada))
 
   }
@@ -63,9 +63,15 @@ class CYKTest extends UnitSpec {
   it should "generar corestamente la matriz si hay mas de una forma de crear la misma cadena" in{
     val g_importada = Importador.importarGramatica(rutaGenerarMatriz + "caso3_redundanciaDeCadena")
     val cadena = "aaab"
-    val matriz = List()
+    val matriz = List(List(Set('A'), Set('A'), Set('A'), Set('B')),      List(Set('A', 'D'), Set('A', 'D'), Set()),      List(Set('E', 'A', 'D'), Set('S')),      List(Set('S')))
     assert(matriz == CYK.generarMatriz(cadena,g_importada))
 
+    //si la cadena empiesa con b no pertence al lenguaje luego la Sno esta en el ultimo nivel
+    val cadena1 = "baaa"
+    val matriz1 = List(List(Set('B'), Set('A'), Set('A'), Set('A')),      List(Set(), Set('A', 'D'), Set('A', 'D')),      List(Set(), Set('E', 'A', 'D')),      List(Set()))
+    assert(matriz1== CYK.generarMatriz(cadena1,g_importada))
   }
+
+
 
 }
