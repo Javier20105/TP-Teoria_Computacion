@@ -8,7 +8,7 @@ abstract class UnitSpec extends FlatSpec with Matchers with OptionValues with In
 
 class ImportadorTest extends  UnitSpec {
   "El importador" should "leer una gramatica correctamente si el input cumple con el formato de entrada" in {
-    val g_importada = Importador.importarGramatica("input/Importador/formatoCorrecto")
+    val g_importada = Importador.importarGramatica("input/Importador/caso1_formatoCorrecto")
     val terminales = Set('a','b','c')
     val variables = Set('S','A','B','C')
     val inicial = 'S'
@@ -18,7 +18,25 @@ class ImportadorTest extends  UnitSpec {
 
   }
 
-  "El Importador" should "throw  tal si el archivo de input no se encuentra en la lista especificada" in {
+  it should "deveria devolver una gramatica sin producciones si no hay producciones en el input" in{
+    val g_importada = Importador.importarGramatica("input/Importador/caso2_sinProducciones")
+    val terminales = Set('a','b','c')
+    val variables = Set('S','A','B','C')
+    val inicial = 'S'
+    val g_test = new Gramatica(terminales,variables,inicial,Set())
+    assert(g_importada == g_test)
+
+  }
+
+  it should "deveria devolver null si el archivo esta vacio" in {
+    val g_importada = Importador.importarGramatica("input/Importador/caso3_vacio")
+    assert(null == g_importada)
+  }
+
+
+
+
+  it should "throw  tal si el archivo de input no se encuentra en la lista especificada" in {
     a[FileNotFoundException] should be thrownBy {
       val g_importada = Importador.importarGramatica("rutaInvalida")
     }

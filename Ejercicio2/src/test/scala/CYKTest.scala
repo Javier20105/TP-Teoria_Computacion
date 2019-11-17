@@ -109,7 +109,7 @@ class CYKTest extends UnitSpec {
     assert(!CYK.perteneceA(cadena1,g_importada2))
     assert(!CYK.perteneceA(cadena1,g_importada3))
 
-    
+
 
 
 
