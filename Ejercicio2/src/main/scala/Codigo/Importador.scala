@@ -15,14 +15,16 @@ object Importador {
       if(lineas.hasNext){
 
         val linea = lineas.next()
+        println("linea leida: " + linea)
         if(linea.size == 0){
           Set()
         }
         else{
-          pattern.findFirstIn(linea) match{
+           pattern.findFirstIn(linea) match{
             case Some(linea) => linea.toSet
             case _=> null
           }
+
         }
       }else{
         null
@@ -40,24 +42,34 @@ object Importador {
       if (s.size == 0) {
         Set()
       } else {
-        val partesProd = s(s.size - 1).split("->")
-        val v = partesProd(0)
-        val c = partesProd(1)
+        val pattern = "->".r
 
-        val variable = "[A-Z]+".r.findFirstIn(v) match{
-          case Some(v) => v
-          case _=> null
+        val partesProd = pattern.findFirstIn(s(s.size - 1)) match {
+          case Some("->") => s(s.size - 1).split("->")
+          case _=> Array(" "," ")
         }
+        if(partesProd.size == 2){
+          val v = partesProd(0)
+          val c = partesProd(1)
 
-        val cadena = "[a-zA-Zε]+".r.findFirstIn(c) match{
-          case Some(c) => c
-          case _=> null
+          val variable = "[A-Z]+".r.findFirstIn(v) match{
+            case Some(v) => v
+            case _=> null
+          }
+
+          val cadena = "[a-zA-Zε]+".r.findFirstIn(c) match{
+            case Some(c) => c
+            case _=> null
+          }
+
+          if(variable == null || cadena == null || variable.length != 1 || (variable.toSet -- variables) == variable || (cadena.toSet -- (variables ++ terminales ++ Set('ε'))).size != 0){
+            crearProducciones(s.take(s.size - 1),terminales,variables) + null
+          }else{
+            crearProducciones(s.take(s.size - 1),terminales,variables) + new Produccion(variable.head, cadena)
+          }
         }
-
-        if(variable == null || cadena == null || variable.length != 1 || (variable.toSet -- variables) == variable || (cadena.toSet -- (variables ++ terminales ++ Set('ε'))).size != 0){
-          crearProducciones(s.take(s.size - 1),terminales,variables) + null
-        }else{
-          crearProducciones(s.take(s.size - 1),terminales,variables) + new Produccion(variable.head, cadena)
+        else{
+          Set(null)
         }
 
 
@@ -67,15 +79,12 @@ object Importador {
 
 
     val lineas = Source.fromFile(ruta).getLines()
-
-
-
     val terminales = verificarFormato(lineas,"[a-z]+".r)
     val variables = verificarFormato(lineas, "[A-Z]+".r)
     val inicial = verificarFormato(lineas, "[A-Z]+".r)
     val producciones = verificarProducciones(lineas,terminales,variables)
 
-    print("terminales: " + terminales + " variables: " + variables + " inicial: " + inicial + " producciones: " + producciones)
+    println("terminales: " + terminales + " variables: " + variables + " inicial: " + inicial + " producciones: " + producciones)
     if((terminales == null || variables == null || inicial == null || inicial.size != 1 || (inicial -- variables) == inicial || producciones.contains(null))){
       null
     }else {
@@ -85,9 +94,7 @@ object Importador {
   }
 
   def main(args:Array[String]):Unit = {
-    val pattern = "[a-z]+".r
-    val linea = "ABC"
-    print(pattern.findFirstIn(linea))
+    print("\n".size)
   }
 
 
