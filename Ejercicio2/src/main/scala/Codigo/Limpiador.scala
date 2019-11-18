@@ -5,6 +5,15 @@ import Modelo.Produccion
 
 object Limpiador {
 
+  def procesoRecursivo[A](anterior:Set[A],actual:Set[A], producciones:Set[Produccion], casoInductivo: (Set[A], Set[Produccion]) => Set[A] ):Set[A] = {
+    if (anterior == actual) {
+      return actual
+    } else {
+      val siguiente = casoInductivo(actual, producciones)
+      procesoRecursivo(actual, siguiente, producciones,casoInductivo)
+    }
+  }
+
   def descubrirNulleables(producciones: Set[Produccion]): Set[Char] = {
 
     def esNulleable(p: Produccion, n: Set[Char]): Boolean = {
@@ -16,17 +25,18 @@ object Limpiador {
     def casoInductivo(nulleables: Set[Char], producciones: Set[Produccion]): Set[Char] = {
       nulleables ++ producciones.filter(esNulleable(_, nulleables)).map(_.variable)
     }
-    def recursiva(anterior: Set[Char], actual: Set[Char], producciones: Set[Produccion]): Set[Char] = {
+    /*def recursiva(anterior: Set[Char], actual: Set[Char], producciones: Set[Produccion]): Set[Char] = {
       if (anterior == actual) {
         return actual
       } else {
         val siguiente = casoInductivo(actual, producciones)
         recursiva(actual, siguiente, producciones)
       }
-    }
+    }*/
     val paso0 = casoBase(producciones)
     val paso1 = casoInductivo(paso0, producciones)
-    recursiva(paso0, paso1, producciones)
+    //recursiva(paso0, paso1, producciones)
+    procesoRecursivo[Char](paso0, paso1, producciones,casoInductivo)
   }
 
   def eliminarProduccionesEpsilon(g: Gramatica): Gramatica = {
@@ -68,18 +78,20 @@ object Limpiador {
         pares ++ r.map((c: (Char, Char)) => (c._1, p.cadena.charAt(0))) ++ casoInductivo(pares, unitarias.tail)
       }
     }
-    def recursiva(anterior: Set[(Char, Char)], actual: Set[(Char, Char)], unitarias: Set[Produccion]): Set[(Char, Char)] = {
+    /*def recursiva(anterior: Set[(Char, Char)], actual: Set[(Char, Char)], unitarias: Set[Produccion]): Set[(Char, Char)] = {
       if (anterior == actual) {
         actual
       } else {
         val siguiente = casoInductivo(actual, unitarias)
         recursiva(actual, siguiente, unitarias)
       }
-    }
+    }*/
     val unitarias = g.producciones.filter(_.esUnitaria())
     val paso0 = casoBase(g.variables)
     val paso1 = casoInductivo(paso0, unitarias)
-    recursiva(paso0, paso1, unitarias)
+    //recursiva(paso0, paso1, unitarias)
+    procesoRecursivo[(Char,Char)](paso0, paso1, unitarias,casoInductivo)
+
   }
 
   def eliminarProduccionesUnitarias(g: Gramatica): Gramatica = {
@@ -107,17 +119,19 @@ object Limpiador {
       generadores ++ producciones.filter((p: Produccion) => (Set() ++ p.cadena).subsetOf(generadores)).map((_.variable))
     }
 
-    def recursiva(anterior: Set[Char], actual: Set[Char], producciones: Set[Produccion]): Set[Char] = {
+    /*def recursiva(anterior: Set[Char], actual: Set[Char], producciones: Set[Produccion]): Set[Char] = {
       if (anterior == actual) {
         return actual
       } else {
         val siguiente = casoInductivo(actual, producciones)
         recursiva(actual, siguiente, producciones)
       }
-    }
+    }*/
     val paso0 = casoBase(g.terminales)
     val paso1 = casoInductivo(paso0, g.producciones)
-    recursiva(paso0, paso1, g.producciones)
+    //recursiva(paso0, paso1, g.producciones)
+    procesoRecursivo[Char](paso0, paso1, g.producciones,casoInductivo)
+
 
   }
 
@@ -137,19 +151,20 @@ object Limpiador {
       alcanzables ++ producciones.filter((p: Produccion) => alcanzables.contains(p.variable)).map(_.cadena.toList).flatten
     }
 
-    def recursiva(anterior: Set[Char], actual: Set[Char], producciones: Set[Produccion]): Set[Char] = {
+    /*def recursiva(anterior: Set[Char], actual: Set[Char], producciones: Set[Produccion]): Set[Char] = {
       if (anterior == actual) {
         return actual
       } else {
         val siguiente = casoInductivo(actual, producciones)
         return recursiva(actual, siguiente, producciones)
       }
-    }
+    }*/
 
     val paso0 = casoBase(g.inicial)
     val paso1 = casoInductivo(paso0, g.producciones)
+    //recursiva(paso0, paso1, g.producciones)
+    procesoRecursivo[Char](paso0, paso1, g.producciones,casoInductivo)
 
-    recursiva(paso0, paso1, g.producciones)
 
   }
 
