@@ -6,7 +6,7 @@ case class Estado(estado: Set[String], esF: Boolean, esI: Boolean/*, tr: Set[Tra
   val esInicial = esI
   //val transiciones = tr
   //override def toString = s"\n{Estado: $id, Inicial: $esI, Final: $esF}"
-  override def toString = s"$id"
+  override def toString = s"Estado:$id"
   def toStringFULL = s"\n{Estado: $id, Inicial: $esI, Final: $esF}"
   def equals(e: Estado) = this.id.equals(e.id)
 }
