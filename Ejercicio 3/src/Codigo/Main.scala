@@ -81,15 +81,38 @@ object Main2 {
   }*/
   
   ////////////////////////////////////////////////////////////////////////////////////////////
-  def creadorGeneral(ret: Set[Transicion],cont: Set[Estado], a: Automata): Set[Transicion] = {
-    if(cont.isEmpty){
-      ret
-    } else {
+  def creadorGeneral(ant: Set[Transicion],cont: Set[Estado], a: Automata): Set[Transicion] = {
+    
+    
+    
+    
+    
+    def recursiva(ant: Set[Transicion],sig:Set[Transicion],cont: Set[Estado], a: Automata): Set[Transicion] ={
+     /* println("Anterior: " + ant)
+      println("Siguiente: " + sig)
+      println("guarda" + (ant == sig))
+      println("Cont: " + cont)*/
+      if(ant == sig){
+      ant
+      } else {
       val transicionesComoTupla = destinos(cont.head,a)
-      //println("transicion como tupla: " + transicionesComoTupla)
-      val acum = ret ++ creadorDeEstadosAFD(transicionesComoTupla)
-      creadorGeneral(acum,cont.tail,a)
+      val nuevosDatos = creadorDeEstadosAFD(transicionesComoTupla)
+      val acum = sig ++ nuevosDatos
+      recursiva(sig,acum, cont.tail ++ nuevosDatos.map(_.estadoSalida) ,a)
+      }
     }
+    
+    val transicionesComoTupla = destinos(cont.head,a)
+    val nuevosDatos = creadorDeEstadosAFD(transicionesComoTupla)
+    val sig = ant ++ nuevosDatos
+    recursiva(ant,sig,cont.tail ++ nuevosDatos.map(_.estadoSalida),a)
+    
+    
+    
+    
+    
+    
+    
   }
   def creadorDeEstadosAFD(set: Set[(Set[Estado],Char,Estado)]): Set[Transicion] = {
     set.map(crearTransicion(_))
@@ -111,7 +134,7 @@ object Main2 {
   // itera todos los inputs de abcedario y le calcula todos los destinos ya con clausuras
   def destinos(estado: Estado, a: Automata): Set[(Set[Estado],Char,Estado)] = {
     // revisar, deberia acumular los de cada uno de los estados dentro del estado.
-    println("trabajando en el estado: "+ estado)
+    //println("trabajando en el estado: "+ estado)
     a.alfabetoInput.map(i => destinosVar(i,transicionesDe(estado,a.transiciones),Set(),a,estado))    
   }
   /**
@@ -140,12 +163,12 @@ object Main2 {
       if(tr.head.esVar(v)){
         val clausura = clausuraEpsilonOBJ(tr.head.estadoSalida,transicionesDe(tr.head.estadoSalida,a.transiciones),a.estadosFinales)
         val acum = actual + clausura
-        println()
+        /*println()
         println("letra: " + v)
         println("actual: " + actual)
         println("clausura: " + clausura)
         println("acum: "+acum)
-        println()
+        println()*/
         destinosVar(v,tr.tail,acum,a,e)
       } else {
         //println("actual: "+ actual)
