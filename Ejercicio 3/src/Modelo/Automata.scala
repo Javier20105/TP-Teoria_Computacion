@@ -1,6 +1,6 @@
 package Modelo
 
-class Automata(t: Set[Char], v: Set[Estado], f: Set[Set[String]], tr: Set[Transicion]) {
+case class Automata(t: Set[Char], v: Set[Estado], f: Set[Set[String]], tr: Set[Transicion]) {
   val alfabetoInput = t
   val estados = v
   val estadosFinales = f

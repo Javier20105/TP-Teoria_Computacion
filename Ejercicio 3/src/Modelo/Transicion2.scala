@@ -1,6 +1,6 @@
 package Modelo
 
-class Transicion2(e: Estado, v: Char, s: Estado) {
+case class Transicion2(e: Estado, v: Char, s: Estado) {
   val estadoEntrada = e
   val variable = v
   val estadoSalida = s

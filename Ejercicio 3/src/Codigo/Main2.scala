@@ -5,7 +5,7 @@ import Modelo.Estado
 import scala.io.Source
 import java.io._
 
-object Main2 {
+object Main23 {
 
   def importarAutomata(ruta: String): Automata2 = {
    /**
