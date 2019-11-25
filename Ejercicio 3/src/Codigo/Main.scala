@@ -217,45 +217,13 @@ object Main2 {
   }
   
   def main(args: Array[String]): Unit = {
-    val gra = importarAutomata("Input/inputEj3")
+    val gra = importarAutomata("Input/TestInputs/TestImportar")
     println("***************Automata AFND-Epsilon*************")
     println(gra)
     println("***************Automata AFD*************")
-    println(transformer(gra))
-    println("***************Tests individuales*************")/*
-    println("Clausura del 1: " + clausuraEpsilon(true,transicionesDe("1",gra.transiciones)))
-    //println("Crear clausuras: " + crearClausurasEpsilon(gra.estados, gra.transiciones))
-    println("DestinosVar: "+destinosVar('a', transicionesDe("1",gra.transiciones),Set(),gra))
-    println("Destinos: "+destinos("1",gra))
-    println("Transiciones del 1: " + transicionesDe("1",gra.transiciones))*/
-    //println("Ignorar: "+crearEstadosAFD(gra))
-    /*
-    val set1 = Set("3","5","4")
-    val set2 = Set("4","5")
-    val eFin = Set("1","2","3")
-    println("Esta contenido? " + estaContenido(set1,set2))
-    println("Contenedor: " + contenedor(set1,set2))
-    println("Crear Estados: " + crearEstadosOBJ(10, eFin, Set()))*/
-   /* val estado = gra.estados.find(_.id.contains("1")).get
-    val estado2 = gra.estados.find(_.id.contains("2")).get
-    val setEstados = Set() + estado + estado2
-    println("Find Estado 1: "+estado)
-    println("ClausuraEpsilon de 1: "+clausuraEpsilonOBJ(estado, gra.transiciones,gra.estadosFinales))
-    
-    println("destinos del estado de 1: \n"+destinos(estado,gra))
-    
-    println("destino de 'a': "+destinosVar('a', transicionesDe(estado,gra.transiciones), Set(), gra))
-    
-    println("Eliminar epsilons: "+eliminarEpsilons(gra.transiciones))*/
-
-    
-    //println("id resultado de la union de los Estados 1 y 2: "+setEstados.flatMap(_.id))
-    
-    // clausura del inicial
-    // destinosvar, que me acumule en un solo estado los del mismo var(char)
-    //clausura
-    //heredarle las transiciones
-    
+    val transformado = transformer(gra)
+    println(transformado)
+    println("***************Tests individuales*************")
   } 
   
   /* Obsoletos?
